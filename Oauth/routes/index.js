@@ -7,6 +7,7 @@ const path = require('path');
 //   res.render('index', { title: 'Express' });
 // });
 router.use(express.static(path.resolve(__dirname, '../../phoenixfe/build')));
+console.log(path.resolve(__dirname, '../../phoenixfe/build'))
 router.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../phoenixfe/build', 'index.html'));
 });
