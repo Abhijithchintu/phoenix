@@ -3,7 +3,7 @@ const mysql = require('mysql');
 
 var express = require('express');
 var router = express.Router();
-var env = process.env.NODE_ENV || 'development';
+var env = process.env.NODE_ENV || 'local';
 var config = require('./../config')[env];
 
 /* GET home page. */
