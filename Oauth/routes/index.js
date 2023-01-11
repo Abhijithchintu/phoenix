@@ -11,11 +11,13 @@ const mysql = require('mysql')
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
-router.post('/register', async (req, res) => {   function(a,b){return a} (a,b) => {return a}
-  if (isExistingUser(req.body.mobile)) {
-    res.send("Existing user!");
+router.post('/register', async (req, res) => {
+  let test1 = await isExistingUser(req.body.mobile);
+  if (test1) {
+    return res.send("Existing user!");
   }
   createUser(req.body.mobile, req.body.password);
+  res.send("upto yhe amark");
 });
 
 var con = mysql.createConnection({
@@ -27,28 +29,30 @@ var con = mysql.createConnection({
 function createUser(mobile, password) {
   con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, \"test_user\", \"name\", ?, ?);", [password, mobile], function (err, result) {
     if (err) throw err;
-    console.log(result);
+    //console.log(result);
     return 0;
   });
 }
 
-function isExistingUser(mobile) {
-  console.log(mobile, typeof mobile);
-  const q = con.query("SELECT client_id FROM phoenixOauth.users WHERE mobile =? AND status=1 LIMIT 1;", mobile, function (err, result) {
-    console.log(result.length===1);
+async function isExistingUser(mobile) {
+
+  // console.log(mobile, typeof mobile);
+  return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE mobile =? AND status=1 LIMIT 1;", mobile, function (err, result) {
+    // console.log(result.length===1);
     if (err) throw err;
-    return result.length === 1;
-  });
-  return q;
+    console.log(" check th type of result: ", typeof result);
+    resolve(result.length === 1);
+  }));
+  
 }
 
 con.connect(function(err) {
   if (err) throw err;
-  console.log("Connected!");
+  // console.log("Connected!");
   con.query("select * from phoenixOauth.users;", function (err, result) {
     if (err) throw err;
-    console.log("Result: \"" + result + "\"");
-    console.log(result === "", result.length);
+    // console.log("Result: \"" + result + "\"");
+    // console.log(result === "", result.length);
   });
 });
 
