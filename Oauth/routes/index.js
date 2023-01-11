@@ -1,7 +1,10 @@
+const path = require('path');
+const mysql = require('mysql');
+
 var express = require('express');
 var router = express.Router();
-const path = require('path');
-const mysql = require('mysql')
+var env = process.env.NODE_ENV || 'development';
+var config = require('./../config')[env];
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -21,9 +24,9 @@ router.post('/register', async (req, res) => {
 });
 
 var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: ""
+  host: config.database.host,
+  user: config.database.user,
+  password: config.database.password
 });
 
 function createUser(mobile, password) {
