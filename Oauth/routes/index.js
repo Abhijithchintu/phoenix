@@ -4,7 +4,7 @@ const mysql = require('mysql');
 var express = require('express');
 var router = express.Router();
 var env = process.env.NODE_ENV || 'local';
-var config = require('./../config')[env];
+var config = require('../config/config.js')[env];
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -15,11 +15,10 @@ router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
 router.post('/register', async (req, res) => {
-  let test1 = await isExistingUser(req.body.mobile);
-  if (test1) {
+  if (await isExistingUser(req.body.mobile, req.body.userName)) {
     return res.send("Existing user!");
   }
-  createUser(req.body.mobile, req.body.password);
+  createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
   res.send("upto yhe amark");
 });
 
@@ -29,18 +28,18 @@ var con = mysql.createConnection({
   password: config.database.password
 });
 
-function createUser(mobile, password) {
-  con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, \"test_user\", \"name\", ?, ?);", [password, mobile], function (err, result) {
+function createUser(userName, name, mobile, password) {
+  con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, ?, ?, ?, ?);", [userName, name, password, mobile], function (err, result) {
     if (err) throw err;
     //console.log(result);
     return 0;
   });
 }
 
-async function isExistingUser(mobile) {
+async function isExistingUser(mobile, userName) {
 
   // console.log(mobile, typeof mobile);
-  return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE mobile =? AND status=1 LIMIT 1;", mobile, function (err, result) {
+  return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=? OR user_name=?) AND status=1 LIMIT 1;", [mobile, userName], function (err, result) {
     // console.log(result.length===1);
     if (err) throw err;
     console.log(" check th type of result: ", typeof result);
