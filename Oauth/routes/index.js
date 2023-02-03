@@ -6,6 +6,8 @@ var router = express.Router();
 var env = process.env.NODE_ENV || 'local';
 var config = require('../config/config.js')[env];
 
+require("../error/OAuthValidationError");
+
 /* GET home page. */
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
@@ -15,11 +17,23 @@ router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
 router.post('/register', async (req, res) => {
+  let userName = req.body.userName;
+  userName = userName.toLowerCase();
+  var v;
+  try {
+    v = validationUserName(req.body.userName);
+  } catch (error) {
+    return res.send(error)
+  }
+  
+  console.log(v);
+  if ("1" !== v)
+    {return res.send(v);}
   if (await isExistingUser(req.body.mobile, req.body.userName)) {
     return res.send("Existing user!");
   }
   createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
-  res.send("upto yhe amark");
+  res.send("upto the amark");
 });
 
 var con = mysql.createConnection({
@@ -27,6 +41,29 @@ var con = mysql.createConnection({
   user: config.database.user,
   password: config.database.password
 });
+
+
+//validation for username
+
+function validationUserName(userName){
+  console.log(userName);
+  if(userName === null){
+    throw new OAuthValidationError("User Name is Empty");
+  }
+  if(userName.length > 20){
+    throw new OAuthValidationError("User Name is too long, it should be in the range of (8-20)");
+  }
+  if(userName.length < 8){
+    return "User Name is too short, it should be in the range of (8-20)";
+  }
+
+  var validID = /^[a-z][a-z0-9]{7,19}$/;
+  if(!userName.match(validID)){
+    return "User Name should start with an alphabet, it should contain only alphabets and numbers";
+  }
+}
+
+
 
 function createUser(userName, name, mobile, password) {
   con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, ?, ?, ?, ?);", [userName, name, password, mobile], function (err, result) {
