@@ -6,7 +6,7 @@ var router = express.Router();
 var env = process.env.NODE_ENV || 'local';
 var config = require('../config/config.js')[env];
 
-require("../error/OAuthValidationError");
+const OAuthValidationError = require("../error/OAuthValidationError");
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -21,14 +21,11 @@ router.post('/register', async (req, res) => {
   userName = userName.toLowerCase();
   var v;
   try {
-    v = validationUserName(req.body.userName);
+    validationUserName(req.body.userName);
   } catch (error) {
-    return res.send(error)
+    return res.send(error.message);
   }
   
-  console.log(v);
-  if ("1" !== v)
-    {return res.send(v);}
   if (await isExistingUser(req.body.mobile, req.body.userName)) {
     return res.send("Existing user!");
   }
@@ -54,12 +51,12 @@ function validationUserName(userName){
     throw new OAuthValidationError("User Name is too long, it should be in the range of (8-20)");
   }
   if(userName.length < 8){
-    return "User Name is too short, it should be in the range of (8-20)";
+    throw new OAuthValidationError("User Name is too short, it should be in the range of (8-20)");
   }
 
   var validID = /^[a-z][a-z0-9]{7,19}$/;
   if(!userName.match(validID)){
-    return "User Name should start with an alphabet, it should contain only alphabets and numbers";
+    throw new OAuthValidationError("User Name should start with an alphabet, it should contain only alphabets and numbers");
   }
 }
 
