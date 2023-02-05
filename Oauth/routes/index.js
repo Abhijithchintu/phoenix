@@ -1,6 +1,7 @@
 const path = require('path');
 const mysql = require('mysql');
 
+const constants = require('../config/constants');
 var express = require('express');
 var router = express.Router();
 var env = process.env.NODE_ENV || 'local';
@@ -47,15 +48,15 @@ function validationUserName(userName){
   if(userName === null){
     throw new OAuthValidationError("User Name is Empty");
   }
-  if(userName.length > 20){
+  if(userName.length > constants.MAX_PASSWORD_LEN){
     throw new OAuthValidationError("User Name is too long, it should be in the range of (8-20)");
   }
-  if(userName.length < 8){
+  if(userName.length < constants.MIN_PASSWORD_LEN){
     throw new OAuthValidationError("User Name is too short, it should be in the range of (8-20)");
   }
 
-  var validID = /^[a-z][a-z0-9]{7,19}$/;
-  if(!userName.match(validID)){
+  
+  if(!userName.match(constants.PASSWORD_REGEX)){
     throw new OAuthValidationError("User Name should start with an alphabet, it should contain only alphabets and numbers");
   }
 }
