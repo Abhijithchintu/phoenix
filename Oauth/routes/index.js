@@ -17,12 +17,17 @@ const OAuthValidationError = require("../error/OAuthValidationError");
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
+function validateUserRegisterRequest(req){
+  validationUserName(req.body.userName);
+  validationMobileNumber(req.body.mobile);
+  validationPassword(req.body.password);
+  validationName(req.body.name);
+}
+
 router.post('/register', async (req, res) => {
-  let userName = req.body.userName;
-  userName = userName.toLowerCase();
-  var v;
+
   try {
-    validationUserName(req.body.userName);
+    validateUserRegisterRequest(req);
   } catch (error) {
     return res.send(error.message);
   }
@@ -42,29 +47,76 @@ var con = mysql.createConnection({
 
 
 //validation for username
+function validationName(name){
+  if(name === undefined){
+    throw new OAuthValidationError("Name is not defined");
+  }
+  if(name.length < constants.MIN_NAME_LEN ){
+    throw new OAuthValidationError("Name is too short, it should contain atleat 3 characters");
+  }
+  if(name.length > constants.MAX_NAME_LEN){
+    throw new OAuthValidationError("Name is too long, it should contain only 40 characters");
+  }
+}
+
+
+function validationPassword(password){
+  if(password === undefined){
+    throw new OAuthValidationError("Password is undefined");
+  }
+  if(password.length > constants.MAX_PASSWORD_LEN){
+    throw new OAuthValidationError("Password is too long, it should be in the range of (8-31)");
+  }
+  if(password.length < constants.MIN_PASSWORD_LEN){
+    throw new OAuthValidationError("Password is too short, it should be in the range of (8-31)");
+  }
+  if(!password.match(constants.PASSWORD_REGEX)){
+    throw new OAuthValidationError("Password must contain atleast 1 Capital letter, 1 small letter and 1 special character");
+  }
+}
+
+function  validationMobileNumber(mobile){
+  if(mobile === undefined){
+    throw new OAuthValidationError("Mobile Number is undefined");
+  }
+  if(mobile === null){
+    throw new OAuthValidationError("Mobile number is empty");
+  }
+  if(mobile.length > constants.MAX_MOBILE_LEN){
+    throw new OAuthValidationError("Mobile number is too long, it should contain 10 digits");
+  }
+  if(mobile.length < constants.MIN_MOBILE_LEN){
+    throw new OAuthValidationError("Mobile number is too short, it should contain 10 digits");
+  }
+  if(!mobile.match(constants.MOBILE_REGEX)){
+    throw new OAuthValidationError("Mobile Number should only contain 10 digts");
+  }
+}
 
 function validationUserName(userName){
-  console.log(userName);
+  if(userName === undefined){
+    throw new OAuthValidationError("User Name is undefined");
+  }
   if(userName === null){
     throw new OAuthValidationError("User Name is Empty");
   }
-  if(userName.length > constants.MAX_PASSWORD_LEN){
+  userName = userName.toLowerCase();
+  if(userName.length > constants.MAX_USERNAME_LEN){
     throw new OAuthValidationError("User Name is too long, it should be in the range of (8-20)");
   }
-  if(userName.length < constants.MIN_PASSWORD_LEN){
+  if(userName.length < constants.MIN_USERNAME_LEN){
     throw new OAuthValidationError("User Name is too short, it should be in the range of (8-20)");
   }
 
   
-  if(!userName.match(constants.PASSWORD_REGEX)){
+  if(!userName.match(constants.USERNAME_REGEX)){
     throw new OAuthValidationError("User Name should start with an alphabet, it should contain only alphabets and numbers");
   }
 }
 
 
-
 function createUser(userName, name, mobile, password) {
-  con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, ?, ?, ?, ?);", [userName, name, password, mobile], function (err, result) {
+  con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, ?, ?, ?, ?);", [userName.toLowerCase(), name, password, mobile], function (err, result) {
     if (err) throw err;
     //console.log(result);
     return 0;
@@ -74,7 +126,7 @@ function createUser(userName, name, mobile, password) {
 async function isExistingUser(mobile, userName) {
 
   // console.log(mobile, typeof mobile);
-  return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=? OR user_name=?) AND status=1 LIMIT 1;", [mobile, userName], function (err, result) {
+  return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=? OR user_name=?) AND status=1 LIMIT 1;", [mobile, userName.toLowerCase()], function (err, result) {
     // console.log(result.length===1);
     if (err) throw err;
     console.log(" check th type of result: ", typeof result);
