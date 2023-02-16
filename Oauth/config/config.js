@@ -3,14 +3,14 @@ var config = {
         database: {
             host:       'localhost',
             user:       'root',
-            password:   ''
+            password:   'Rakesh@123'
         }
     },
     production: {
         database: {
             host:       'localhost',
             user:       'root',
-            password:   ''
+            password:   'Rakesh@123'
         }
     }
 };

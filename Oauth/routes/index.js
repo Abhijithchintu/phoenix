@@ -45,11 +45,11 @@ router.post('/register', async (req, res) => {
   }
   
   if (await isExistingUserMobile(req.body.mobile)) {
-    logger.info("Mobile number already registered");
+    logger.error("Mobile number already registered");
     return res.send("Mobile number is already registered!");
   }
   if (await isExistingUserUserName(req.body.userName)) {
-    logger.info("User Name already exists");
+    logger.error("User Name already exists");
     return res.send("User name already exists!");
   }
   createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
