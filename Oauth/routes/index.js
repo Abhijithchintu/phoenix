@@ -40,7 +40,7 @@ router.post('/register', async (req, res) => {
   try {
     validation.validateUserRegisterRequest(req);
   } catch (error) {
-    logger.error("This is Registration error");
+    logger.error("This is Registration error", error);
     return res.send(error.message);
   }
   
@@ -54,7 +54,7 @@ router.post('/register', async (req, res) => {
   }
   createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
   logger.info("User details added to the database. Registration successful!");
-  res.send("User details added to the registry");
+  return res.send("User details added to the registry");
 
 
 });
@@ -117,5 +117,54 @@ con.connect(function(err) {
 router.use(express.static(path.resolve(__dirname, '../../phoenixfe/build')));
 router.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../phoenixfe/build', 'index.html'));
+});
+
+
+async function validateLogin(req){
+  logger.debug("Validating user login details");
+  var a = new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=? or user_name=?) AND status=1 LIMIT 1;", [req.body.userid, req.body.userid], function (err, result) {
+    // console.log(result.length===1);
+    if (err) throw err;
+    console.log(result.length + " :result length");
+    if(result.length === 0){
+      logger.error(req.body.userid + " :userid not found in the registry");
+      
+    }
+    return resolve(result.length === 1);
+  }));
+  
+  if(await a){
+  var b = new Promise((resolve, reject) => con.query("SELECT * FROM phoenixOauth.users WHERE ((mobile=? or user_name=?) and password=?) AND status=1 LIMIT 1;", [req.body.userid, req.body.userid, req.body.password], function (err, result) {
+      // console.log(result.length===1);
+      if (err) throw err;
+      console.log(result.length + " :result length");
+      if(!result.length){
+        logger.error(req.body.password + " :password is incorrect");
+        
+      }
+      else{
+        console.log(result);
+      }
+      return resolve(result.length === 1);
+    })); 
+  }
+  else{
+    throw new OAuthValidationError("userid is wrong, try again");
+  }
+  if(!(await b)){
+    throw new OAuthValidationError("Password is incorrect, try again"); 
+  }
+}
+
+router.post('/login', async (req, res) => {
+  logger.debug("This is login route");
+  try {
+    await validateLogin(req);
+  } catch (error) {
+    logger.error("This is Login error", error);
+    return res.send(error.message);
+  }
+  logger.info("User details are correct and successfully logged in");
+  return res.send(" You have successfully logged in");
 });
 module.exports = router;
