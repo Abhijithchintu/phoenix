@@ -1,16 +1,18 @@
 var config = {
     local: {
         database: {
-            host:       'localhost',
+            host:       '127.0.0.1',
             user:       'root',
-            password:   'Rakesh@123'
+            password:   '',
+            port: 3306
         }
     },
     production: {
         database: {
-            host:       'localhost',
+            host:       '127.0.0.1',
             user:       'root',
-            password:   'Rakesh@123'
+            password:   '',
+            port: 3306
         }
     }
 };
