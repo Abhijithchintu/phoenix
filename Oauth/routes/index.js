@@ -13,10 +13,6 @@ const logger = require("../logger");
 
 const OAuthValidationError = require("../error/OAuthValidationError");
 
-/* GET home page. */
-// router.get('/', function(req, res, next) {
-//   res.render('index', { title: 'Express' });
-// });
 
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
@@ -72,7 +68,6 @@ function createUser(userName, name, mobile, password) {
   logger.debug(" Creating User");
   con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, ?, ?, ?, ?);", [userName.toLowerCase(), name, password, mobile], function (err, result) {
     if (err) throw err;
-    //console.log(result);
     return 0;
   });
 }
@@ -81,9 +76,7 @@ async function isExistingUserMobile(mobile) {
 
   logger.debug("Checking the Registering mobile number in the database");
 
-  // console.log(mobile, typeof mobile);
   return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=?) AND status=1 LIMIT 1;", [mobile], function (err, result) {
-    // console.log(result.length===1);
     if (err) throw err;
     resolve(result.length === 1);
   }));
@@ -94,9 +87,8 @@ async function isExistingUserUserName(userName) {
 
   logger.debug("Checking the Registering user name in the database");
 
-  // console.log(mobile, typeof mobile);
   return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (user_name=?) AND status=1 LIMIT 1;", [userName.toLowerCase()], function (err, result) {
-    // console.log(result.length===1);
+    
     if (err) throw err;
     resolve(result.length === 1);
   }));
@@ -105,11 +97,8 @@ async function isExistingUserUserName(userName) {
 
 con.connect(function (err) {
   if (err) throw err;
-  // console.log("Connected!");
   con.query("select * from phoenixOauth.users;", function (err, result) {
     if (err) throw err;
-    // console.log("Result: \"" + result + "\"");
-    // console.log(result === "", result.length);
   });
 });
 
@@ -126,7 +115,6 @@ async function validateLogin(req) {
   let clientid;
   logger.debug("Validating user login details");
   var validateUseridPromise = new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=? or user_name=?) AND status=1 LIMIT 1;", [req.body.userid, req.body.userid], function (err, result) {
-    // console.log(result.length===1);
     if (err) throw err;
     console.log(result.length + " :result length");
     if (result.length === 0) {
@@ -137,7 +125,6 @@ async function validateLogin(req) {
 
   if (await validateUseridPromise) {
     var validatePasswordPromise = new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE ((mobile=? or user_name=?) and password=?) AND status=1 LIMIT 1;", [req.body.userid, req.body.userid, req.body.password], function (err, result) {
-      // console.log(result.length===1);
       if (err) throw err;
       console.log(result.length + " :result length");
       if (!result.length) {
@@ -176,11 +163,6 @@ rediscl.connect().then(async () => {
   });
 });
 
-// rediscl.on("connect", function () {
-//   console.log("Redis plugged in.");
-// });
-
-
 
 
 const jwt_secret = "jwtfanhere";
@@ -202,27 +184,20 @@ router.post('/login', async (req, res) => {
   }
   logger.info("User details are correct and successfully logged in");
 
-  // Generate new refresh token and it's expiration
   let refresh_token = generate_refresh_token(64);
   let refresh_token_maxage = new Date() + jwt_refresh_expiration;
 
-  // Generate new access token
   let token = jwt.sign({ uid: user_id }, jwt_secret, {
     expiresIn: jwt_expiration
   });
 
-  // Set browser httpOnly cookies
   res.cookie("access_token", token, {
-    // secure: true,
     httpOnly: true
   });
   res.cookie("refresh_token", refresh_token, {
-    // secure: true,
     httpOnly: true
   });
 
-
-  // And store the user in Redis under key 2212
 
   console.log("here is the user_id", user_id);
   let uid = JSON.stringify(user_id);
@@ -246,66 +221,44 @@ router.post('/login', async (req, res) => {
 
 });
 
-// Let's define a helper function that we will use in most of our routes.
 function validate_jwt(req, res) {
 
-  // Let's make this Promise-based
   return new Promise((resolve, reject) => {
     let accesstoken = req.cookies.access_token || null;
     console.log(accesstoken, " access token is here");
     let refreshtoken = req.cookies.refresh_token || null;
 
-    // Check if tokens found in cookies
     if (accesstoken && refreshtoken) {
 
-      // They are, so let's verify the access token  
       jwt.verify(accesstoken, jwt_secret, async function (err, decoded) {
 
         if (err) {
 
-          // There are three types of errors, but we actually only care
-          // about this one, because it says that the access token
-          // expired and we need to issue a new one using refresh token
           if (err.name === "TokenExpiredError") {
 
-            // Let's see if we can find token in Redis. We should, because
-            // token expired, which means that we already inserted it into
-            // redis at least once.
-            let redis_token = rediscl.get(decoded.uid, function (err, val) {
+            let redis_token = rediscl.get(uid, function (err, val) {
               return err ? null : val ? val : null;
             });
 
-            // If the token wasn't found, or the browser has sent us a refresh
-            // token that was different than the one in DB last time, then ...
             if (
               !redis_token ||
               redis_token.refresh_token === refreshtoken
             ) {
-              // ... we are probably dealing with hack attempt, because either
-              // there is no refresh token with that value, or the refresh token
-              // from request and storage do not equal for that specific user
+
               reject("Nice try ;-)");
             } else {
 
-              // It can also happen that the refresh token expires; in that case
-              // we need to issue both tokens at the same time
+              
               if (redis_token.expires > new Date()) {
-                // refresh token expired, we issue refresh token as well
+
                 let refresh_token = generate_refresh_token(64);
 
-                // Then we assign this token into httpOnly cookie using response
-                // object. I disabled the secure option - if you're running on
-                // localhost, keep it disabled, otherwise uncomment it if your
-                // web app uses HTTPS protocol
                 res.cookie("__refresh_token", refresh_token, {
-                  // secure: true,
                   httpOnly: true
                 });
 
-                // Then we refresh the expiration for refresh token. 1 month from now
                 let refresh_token_maxage = new Date() + jwt_refresh_expiration;
 
-                // And then we save it in Redis
                 rediscl.set(
                   decoded.uid,
                   JSON.stringify({
@@ -316,34 +269,27 @@ function validate_jwt(req, res) {
                 );
               }
 
-              // Then we issue access token. Notice that we save user ID
-              // inside the JWT payload
               let token = jwt.sign({ uid: decoded.uid }, jwt_secret, {
                 expiresIn: jwt_expiration
               });
 
-              // Again, let's assign this token into httpOnly cookie.
+              
               res.cookie("__access_token", token, {
-                // secure: true,
                 httpOnly: true
               });
 
-              // And then return the modified request and response objects,
-              // so we can work with them later
+              
               resolve({
                 res: res,
                 req: req
               });
             }
           } else {
-            // If any error other than "TokenExpiredError" occurs, it means
-            // that either token is invalid, or in wrong format, or ...  
+
             reject(err);
           }
         } else {
 
-          // There was no error with validation, access token is valid
-          // and none of the tokens expired  
           resolve({
             res: res,
             req: req
@@ -351,14 +297,13 @@ function validate_jwt(req, res) {
         }
       });
     } else {
-      // Well, no tokens. Someone is trying to access
-      // your web app without being logged in.
+
       reject("Token missing.")
     };
   });
 }
 
-// A little helper function for generation of refresh tokens
+
 function generate_refresh_token(len) {
   var text = "";
   var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -371,11 +316,9 @@ function generate_refresh_token(len) {
 
 
 router.post("/profile", (req, res, next) => {
-  // let's say that the unknown user wants to edit some profile
-  validate_jwt(req, res, pgdb).then(result => {
-    // Pass your modified request and result objects further
-    // to any method that generates content, or works with DB,
-    // or whatever you like
+
+  validate_jwt(req, res).then(result => {
+
     console.log("You have successfully logged in with Authentication and Authorization. <3");
   })
     .catch(error => {
