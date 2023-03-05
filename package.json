@@ -1,5 +1,11 @@
 {
-  "dependencies": {
-    "express": "^4.18.2"
+  "scripts": {
+    "Oauth": "cd Oauth && npm start",
+    "People": "cd People && npm start",
+    "Chat": "cd Chat && npm start",
+    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
   }
 }
