@@ -326,6 +326,19 @@ router.post("/profile", (req, res, next) => {
     });
 });
 
+function validate_internal_client(req) {
+  token = req.headers["jwt-token"] || req.headers["x-access-token"] || req.body.token;
+  if (!token)
+    throw new OAuthValidationError("Invalid token");
+  try {
+    const decoded = jwt.verify(token, config.TOKEN_KEY);
+    req.user = decoded;
+  } catch (err) {
+    return res.status(401).send("Invalid Token");
+  }
+
+}
+
 
 
 
