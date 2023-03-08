@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "Oauth": "cd Oauth && npm start",
+    "People": "cd People && npm start",
+    "Chat": "cd Chat && npm start",
+    "phoenixfe": "cd phoenixfe && npm run build",
+    "Oauthinstall": "cd Oauth && npm install",
+    "Peopleinstall": "cd People && npm install",
+    "Chatinstall": "cd Chat && npm install",
+    "phoenixfeinstall": "cd phoenixfe && npm install",
+    "Oauthremove": "cd Oauth && rm -rf node_modules && rm -rf package-lock.json",
+    "Peopleremove": "cd People && rm -rf node_modules && rm -rf package-lock.json",
+    "Chatremove": "cd Chat && rm -rf node_modules && rm -rf package-lock.json",
+    "phoenixferemove": "cd phoenixfe && rm -rf node_modules && rm -rf package-lock.json",
+    "install": "concurrently \"npm run Oauthinstall\" \"npm run Peopleinstall\" \"npm run Chatinstall\" \"npm run phoenixfeinstall\"",
+    "removen": "concurrently \"npm run Oauthremove\" \"npm run Peopleremove\" \"npm run Chatremove\" \"npm run phoenixferemove\"",
+    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\" \"npm run phoenixfe\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
