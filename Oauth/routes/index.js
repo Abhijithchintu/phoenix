@@ -339,6 +339,11 @@ function validate_internal_client(req) {
 
 }
 
+router.post("/t2", (req, res) => {
+
+  validate_jwt(req, res);
+});
+
 
 
 
