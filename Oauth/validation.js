@@ -7,10 +7,6 @@ const logger = require("./logger");
 
 
   function validateUserRegisterRequest(req){
-    logger.info(typeof req.body.userName + " : userName is validated");
-    logger.info(typeof req.body.mobile);
-    logger.info(typeof req.body.password + " :Password is validated");
-    logger.info(typeof req.body.name + " : Name of the user is validated");
     logger.info("Validating all user inputs in registration route");
 
     logger.debug("Validating userName in regitration route");
@@ -28,8 +24,6 @@ const logger = require("./logger");
     logger.debug("Validating Name of the User in regitration route");
     validationName(req.body.name);
     logger.info(req.body.name + " : Name of the user is validated");
-    
-    
   }
 
   function validationName(name){
@@ -84,14 +78,13 @@ const logger = require("./logger");
       logger.error(mobile + " is too short");
       throw new OAuthValidationError("Mobile number is too short, it should contain 10 digits");
     }
-    if(!String(mobile).match(constants.MOBILE_REGEX)){
+    if(!mobile.match(constants.MOBILE_REGEX)){
       logger.error(mobile + " did not match the regex");
       throw new OAuthValidationError("Mobile Number should only contain 10 digts");
     }
   }
   
   function validationUserName(userName){
-    logger.info(typeof userName);
     if(userName === undefined){
       logger.error("userName not defined");
       throw new OAuthValidationError("User Name is undefined");
@@ -110,7 +103,7 @@ const logger = require("./logger");
       throw new OAuthValidationError("User Name is too short, it should be in the range of (8-20)");
     }
   
-    logger.info(userName.match(constants.USERNAME_REGEX));
+    
     if(!userName.match(constants.USERNAME_REGEX)){
       logger.error(userName + " did not match the regex");
       throw new OAuthValidationError("User Name should start with an alphabet, it should contain only alphabets and numbers");
