@@ -159,15 +159,37 @@ var rediscl = redis.createClient();
 rediscl.connect().then(async () => {
   rediscl.on('error', err => {
     console.log('Error ' + err);
-    logger.info("Error is her");
+    logger.info("Error is here");
   });
 });
 
 
 
 const jwt_secret = "jwtfanhere";
-const jwt_expiration = 60 * 10;
-const jwt_refresh_expiration = 60 * 60 * 24 * 30;
+const jwt_expiration = 1000*60 ;
+const jwt_refresh_expiration = 1000*60 * 5;
+
+async function redisGet(redisKey){
+  let tokenValue = await rediscl.get(redisKey, function (err, val) {
+    if (err) throw err;
+  });
+  logger.info("You have succesfullly got redis values" + tokenValue);
+  let tokenValues = JSON.parse(tokenValue);
+  return tokenValues;
+}
+
+async function redisSet(redisKey, redisValue1, redisValue2){
+  rediscl.set(
+    redisKey,
+    JSON.stringify({
+      refresh_token: redisValue1,
+      expires: redisValue2
+    }), function (err, result) {
+      if (err) throw (err);
+      console.log(result);
+    }
+  );
+}
 
 
 
@@ -187,7 +209,7 @@ router.post('/login', async (req, res) => {
   let refresh_token = generate_refresh_token(64);
   let refresh_token_maxage = new Date() + jwt_refresh_expiration;
 
-  let token = jwt.sign({ uid: user_id }, jwt_secret, {
+  let token = jwt.sign({id: refresh_token}, jwt_secret, {
     expiresIn: jwt_expiration
   });
 
@@ -199,114 +221,98 @@ router.post('/login', async (req, res) => {
   });
 
 
-  console.log("here is the user_id", user_id);
   let uid = JSON.stringify(user_id);
-  console.log("here is the string for redis", JSON.stringify({
-    refresh_token: refresh_token,
-    expires: refresh_token_maxage
-  }));
-  rediscl.set(uid, JSON.stringify({
-    refresh_token: refresh_token,
-    expires: refresh_token_maxage
-  }), function (err, result) {
-    if (err) throw (err);
-    console.log(result);
+
+  try{
+    await redisSet(refresh_token, refresh_token, refresh_token_maxage);
+  } catch(error){
+    return res.send("error");
   }
-  );
 
-
-  var siftvalue = await rediscl.get(uid);
-  console.log(siftvalue, " here it is");
   return res.send(" You have successfully logged in");
 
 });
 
-function validate_jwt(req, res) {
 
-  return new Promise((resolve, reject) => {
-    let accesstoken = req.cookies.access_token || null;
-    console.log(accesstoken, " access token is here");
-    let refreshtoken = req.cookies.refresh_token || null;
 
-    if (accesstoken && refreshtoken) {
+async function validate_jwt(req, res) {
+   
+  let accesstoken = req.cookies.access_token || null;
+  let refreshtoken = req.cookies.refresh_token || null;
+  if (accesstoken && refreshtoken) {
 
-      jwt.verify(accesstoken, jwt_secret, async function (err, decoded) {
+    jwt.verify(accesstoken, jwt_secret, async function (err, decoded) {
+      if (err) {
+        logger.info("Entered into if err" + err);
+        if (err.name === "TokenExpiredError") {
+          let redis_token = await redisGet(refreshtoken);
+          if (
+            !redis_token ||
+            redis_token.refresh_token !== refreshtoken
+          ) {
+            logger.info("Entered into hacker region # 1");
+            throw new OAuthValidationError("Nice try ;-)");
+          } 
+          else {
+            logger.info("Entered into else of hacker # 1");
+            if (redis_token.expires > new Date()) {
+              logger.info("Entered into Expiration if loop");
 
-        if (err) {
+              let refresh_token = generate_refresh_token(64);
 
-          if (err.name === "TokenExpiredError") {
-
-            let redis_token = rediscl.get(uid, function (err, val) {
-              return err ? null : val ? val : null;
-            });
-
-            if (
-              !redis_token ||
-              redis_token.refresh_token === refreshtoken
-            ) {
-
-              reject("Nice try ;-)");
-            } else {
-
-              
-              if (redis_token.expires > new Date()) {
-
-                let refresh_token = generate_refresh_token(64);
-
-                res.cookie("__refresh_token", refresh_token, {
-                  httpOnly: true
-                });
-
-                let refresh_token_maxage = new Date() + jwt_refresh_expiration;
-
-                rediscl.set(
-                  decoded.uid,
-                  JSON.stringify({
-                    refresh_token: refresh_token,
-                    expires: refresh_token_maxage
-                  }),
-                  rediscl.print
-                );
-              }
-
-              let token = jwt.sign({ uid: decoded.uid }, jwt_secret, {
-                expiresIn: jwt_expiration
+              res.cookie("__refresh_token", refresh_token, {
+                httpOnly: true
               });
 
+              let refresh_token_maxage = new Date() + jwt_refresh_expiration;
+
+              await redisSet(refresh_token, refresh_token, refresh_token_maxage);
+
+              let token = jwt.sign({id: refresh_token}, jwt_secret, {
+                expiresIn: jwt_expiration
+              });
               
               res.cookie("__access_token", token, {
                 httpOnly: true
               });
-
-              
-              resolve({
-                res: res,
-                req: req
-              });
+              res.cookie("session_id", refresh_token, {
+                httponly: true
+              })
             }
-          } else {
+            logger.info("Authorization succesfull! Changed the expiration date");
 
-            reject(err);
           }
-        } else {
-
-          resolve({
-            res: res,
-            req: req
-          });
+        } 
+        else {
+          logger.info("Entered into else of other errors" + err);
+          throw new OAuthValidationError("Error in JWT Verification : " + err);
         }
-      });
-    } else {
+      } 
+      else {
+        logger.info("Entered into else of no error");
 
-      reject("Token missing.")
-    };
-  });
+        let redis_token = await redisGet(refreshtoken);
+        if (
+          !redis_token
+        ) {
+          logger.info("Cookie Modified at refresh token");
+          throw new OAuthValidationError("Cookie Modified!");
+        }
+        logger.info("Entered into final Authorization succesful");
+      }
+    });
+  } 
+  else {
+    logger.info("Token missing man");
+    throw new OAuthValidationError("Token missing!!");
+  };
+
 }
 
 
 function generate_refresh_token(len) {
   var text = "";
-  var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+  var charset = "abcdefghijklmnopqrstuvwxyz012345";
 
   for (var i = 0; i < len; i++)
     text += charset.charAt(Math.floor(Math.random() * charset.length));
@@ -315,15 +321,21 @@ function generate_refresh_token(len) {
 }
 
 
-router.post("/profile", (req, res, next) => {
+router.post("/profile", async (req, res, next) => {
 
-  validate_jwt(req, res).then(result => {
+  try{
+      
+    await validate_jwt(req, res);
+    
+  }
+  catch(error){
+    logger.error("This is Authoriz error" + error);
+    res.send(error.message);
+  };
 
-    console.log("You have successfully logged in with Authentication and Authorization. <3");
-  })
-    .catch(error => {
-      throw error;
-    });
+  console.log("You have successfully logged in with Authentication and Authorization. <3");
+  return res.send("You have successfully logged in with Authentication and Authorization");
+  
 });
 
 
