@@ -9,5 +9,13 @@ module.exports = Object.freeze({
     MIN_PASSWORD_LEN: 8,
     PASSWORD_REGEX: /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%&*_])[A-Za-z\d!@#$%&*_]{8,31}$/,
     MIN_NAME_LEN: 3,
-    MAX_NAME_LEN: 40
+    MAX_NAME_LEN: 40,
+    INTERNAL_TOKEN_EXPIRY_BUFFER: 100,
+    STATUS : {
+        SUCCESS : {CODE: "0", MSG: "success"},
+        TOKEN_VALIDATION_FAILURE: {CODE: "3", MSG: "token verification failed"}
+    },
+    STATUS_CODE: "statusCode",
+    STATUS_MESSAGE: "statusMessage",
+    SERVER_TIME: "serverTime"
 });

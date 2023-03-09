@@ -1,4 +1,5 @@
 const path = require('path');
+const mysql = require('mysql');
 
 const constants = require('../config/constants');
 var express = require('express');
@@ -7,19 +8,13 @@ var env = process.env.NODE_ENV || 'local';
 var config = require('../config/config.js')[env];
 
 const PORT = process.env.PORT || "3000";
-var validation = require("../api/validation");
+var validation = require("../validation");
 const logger = require("../logger");
 
 const OAuthValidationError = require("../error/OAuthValidationError");
+var validate_internal_client = require("../middleware/internal").validate_internal_client;
 
-const register = require("../api/register")
-
-const redis = require("redis");
-const jwt = require("jsonwebtoken");
-
-var rediscl = redis.createClient();
-
-router.use(express.urlencoded({ extended: true })); //bodyparser
+router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
 
@@ -28,10 +23,6 @@ router.get('/test', (req, res, next) => {
   next();
 })
 
-router.use(express.static(path.resolve(__dirname, '../../phoenixfe/build')));
-router.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../phoenixfe/build', 'index.html'));
-});
 
 router.post('/register', async (req, res) => {
 
@@ -44,15 +35,15 @@ router.post('/register', async (req, res) => {
     return res.send(error.message);
   }
 
-  if (await register.isExistingUserMobile(req.body.mobile)) {
+  if (await isExistingUserMobile(req.body.mobile)) {
     logger.error("Mobile number already registered");
     return res.send("Mobile number is already registered!");
   }
-  if (await register.isExistingUserUserName(req.body.userName)) {
+  if (await isExistingUserUserName(req.body.userName)) {
     logger.error("User Name already exists");
     return res.send("User name already exists!");
   }
-  register.createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
+  createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
   logger.info("User details added to the database. Registration successful!");
   return res.send("User details added to the registry");
 
@@ -106,31 +97,6 @@ router.post('/login', async (req, res) => {
   return res.send(" You have successfully logged in");
 
 });
-
-router.post("/profile", (req, res, next) => {
-
-  validate_jwt(req, res).then(result => {
-
-    console.log("You have successfully logged in with Authentication and Authorization. <3");
-  })
-    .catch(error => {
-      throw error;
-    });
-});
-
-
-
-rediscl.connect().then(async () => {
-  rediscl.on('error', err => {
-    console.log('Error ' + err);
-    logger.info("Error is her");
-  });
-});
-
-const jwt_secret = "jwtfanhere";
-const jwt_expiration = 60 * 10;
-const jwt_refresh_expiration = 60 * 60 * 24 * 30;
-
 
 function validate_jwt(req, res) {
 
@@ -224,5 +190,43 @@ function generate_refresh_token(len) {
 
   return text;
 }
+
+
+router.post("/profile", (req, res, next) => {
+
+  validate_jwt(req, res).then(result => {
+
+    console.log("You have successfully logged in with Authentication and Authorization. <3");
+  })
+    .catch(error => {
+      throw error;
+    });
+});
+
+
+
+router.post("/healthcheck/internal", validate_internal_client, async (req, res) => {
+  if ("internal_client_id" in req)
+    res.send(
+      {
+        STATUS_CODE: STATUS.SUCCESS.CODE,
+        STATUS_MESSAGE: STATUS.SUCCESS.MSG,
+        [constants.SERVER_TIME]: Date.now()
+      }
+    );
+  else
+    res.send(
+      {
+        STATUS_CODE: STATUS.TOKEN_VALIDATION_FAILURE.CODE,
+        STATUS_MESSAGE: STATUS.TOKEN_VALIDATION_FAILURE.MSG,
+        [constants.SERVER_TIME]: Date.now()
+      }
+    );
+});
+
+
+
+
+
 
 module.exports = router;
