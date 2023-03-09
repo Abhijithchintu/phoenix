@@ -22,8 +22,7 @@ class login {
         if (err) throw err;
         console.log(result.length + " :result length");
         if(!result.length){
-          logger.error(req.body.password + " :password is incorrect");
-          
+          logger.error("password is incorrect");
         }
         else{
           console.log(result);
