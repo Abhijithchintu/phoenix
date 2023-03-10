@@ -13,11 +13,23 @@ const logger = require("../logger");
 const OAuthValidationError = require("../error/OAuthValidationError");
 
 const register = require("../api/register")
+const login = require("../api/login");
+
+const jwt_secret = "jwtfanhere";
+const jwt_expiration = 60 * 10;
+const jwt_refresh_expiration = 60 * 60 * 24 * 30;
 
 const redis = require("redis");
 const jwt = require("jsonwebtoken");
 
 var rediscl = redis.createClient();
+
+rediscl.connect().then(async () => {
+  rediscl.on('error', err => {
+    console.log('Error ' + err);
+    logger.info("Error is here");
+  });
+});
 
 router.use(express.urlencoded({ extended: true })); //bodyparser
 router.use(express.json());
@@ -58,11 +70,30 @@ router.post('/register', async (req, res) => {
 
 });
 
+
+async function redisGet(key) {
+  let tokenValue = await rediscl.get(key, (err, res) => {
+    if (err) throw err;
+  });
+  tokenValue = JSON.parse(tokenValue);
+  return tokenValue;
+};
+
+
+async function redisSet(key, key, skey){
+  await rediscl.set(
+    key,
+    JSON.stringify({
+      refresh_token: key,
+      expires: skey
+    })
+  );
+}
+
 router.post('/login', async (req, res) => {
   logger.debug("This is login route");
   try {
-    user_id = await validateLogin(req);
-    console.log(user_id) + "Here is it!!!";
+    await login.validateLogin(req);
 
   } catch (error) {
     logger.error("This is Login error", error);
@@ -85,7 +116,6 @@ router.post('/login', async (req, res) => {
   });
 
 
-  let uid = JSON.stringify(user_id);
 
   try{
     await redisSet(refresh_token, refresh_token, refresh_token_maxage);
@@ -96,6 +126,9 @@ router.post('/login', async (req, res) => {
   return res.send(" You have successfully logged in");
 
 });
+
+
+
 
 
 
@@ -186,17 +219,20 @@ function generate_refresh_token(len) {
 
 
 router.post("/profile", async (req, res, next) => {
-
-  try{
+  async function authorizationjwt(){
+    try{
+        
+      await validate_jwt(req, res);
       
-    await validate_jwt(req, res);
-    
+    }
+    catch(error){
+      logger.error("This is Authoriz error" + error);
+      res.send(error.message);
+    };
   }
-  catch(error){
-    logger.error("This is Authoriz error" + error);
-    res.send(error.message);
-  };
-
+  authorizationjwt().catch(err => {
+    throw new OAuthValidationError(err);
+  });
   console.log("You have successfully logged in with Authentication and Authorization. <3");
   return res.send("You have successfully logged in with Authentication and Authorization");
   
