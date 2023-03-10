@@ -5,6 +5,7 @@ var express = require('express');
 var router = express.Router();
 var env = process.env.NODE_ENV || 'local';
 var config = require('../config/config.js')[env];
+var login = require('../api/login')
 
 const PORT = process.env.PORT || "3000";
 var validation = require("../api/validation");
@@ -61,7 +62,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   logger.debug("This is login route");
   try {
-    user_id = await validateLogin(req);
+    user_id = await login.validateLogin(req);
     console.log(user_id) + "Here is it!!!";
 
   } catch (error) {
