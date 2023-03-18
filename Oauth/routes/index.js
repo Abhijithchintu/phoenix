@@ -29,6 +29,21 @@ router.get('/test', (req, res, next) => {
   next();
 })
 
+router.get('/health-check', async (req, res) => {
+  const message = {
+    "message": "health is ok",
+    "uptime": process.uptime(),
+    "timestamp": Date(Date.now())
+  }
+  try{
+    res.send(message)
+  }
+  catch(e){
+    healthcheck.message = e;
+		res.status(503).send();
+  }
+})
+
 router.use(express.static(path.resolve(__dirname, '../../phoenixfe/build')));
 router.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../phoenixfe/build', 'index.html'));
