@@ -15,7 +15,7 @@ const logger = require("../logger");
 
     logger.debug("validating password in registration route");
     validationPassword(req.body.password);
-    logger.info(req.body.password + " :Password is validated");
+    logger.info("Password is validated");
 
     logger.debug("Validating Name of the User in regitration route");
     validationName(req.body.name);
