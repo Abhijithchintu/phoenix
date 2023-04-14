@@ -9,7 +9,7 @@ var config = require('../config/config.js')[env];
 var login = require('../api/login')
 
 const PORT = process.env.PORT || "3000";
-var validation = require("../validation");
+var validation = require("../api/validation");
 const logger = require("../logger");
 
 const OAuthValidationError = require("../error/OAuthValidationError");
@@ -65,15 +65,15 @@ router.post('/register', async (req, res) => {
     return res.send(error.message);
   }
 
-  if (await isExistingUserMobile(req.body.mobile)) {
+  if (await register.isExistingUserMobile(req.body.mobile)) {
     logger.error("Mobile number already registered");
     return res.send("Mobile number is already registered!");
   }
-  if (await isExistingUserUserName(req.body.userName)) {
+  if (await register.isExistingUserUserName(req.body.userName)) {
     logger.error("User Name already exists");
     return res.send("User name already exists!");
   }
-  createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
+  register.createUser(req.body.userName, req.body.name, req.body.mobile, req.body.password);
   logger.info("User details added to the database. Registration successful!");
   return res.send("User details added to the registry");
 
