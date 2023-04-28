@@ -10,10 +10,10 @@ var con = mysql.createConnection({
   });
   
   con.connect(function (err) {
-    if (err) throw err;
-    con.query("select * from phoenixOauth.users;", function (err, result) {
-      if (err) throw err;
-    });
+    // if (err) throw err;
+    // con.query("select * from phoenixOauth.users;", function (err, result) {
+    //   if (err) throw err;
+    // });
   });
 
 module.exports = con
