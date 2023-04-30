@@ -4,6 +4,8 @@ const mysql = require('mysql');
 const constants = require('../config/constants');
 var express = require('express');
 var router = express.Router();
+var csrf = require('lusca').csrf;
+router.use(csrf());
 var env = process.env.NODE_ENV || 'local';
 var config = require('../config/config.js')[env];
 var login = require('../api/login')
