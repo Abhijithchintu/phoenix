@@ -3,7 +3,7 @@ USE `phoenixOauth`;
 
 CREATE TABLE `users` (
   `client_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `status` tinyint(2) DEFAULT NULL,
+  `status` tinyint(2) NOT NULL DEFAULT 1,
   `user_name` varchar(32) NOT NULL,
   `name` varchar(32) NOT NULL,
   `gender` tinyint(1) DEFAULT NULL,

@@ -1,4 +1,5 @@
 const path = require('path');
+const mysql = require('mysql');
 
 const constants = require('../config/constants');
 var express = require('express');
@@ -12,6 +13,7 @@ var validation = require("../api/validation");
 const logger = require("../logger");
 
 const OAuthValidationError = require("../error/OAuthValidationError");
+var validate_internal_client = require("../middleware/internal").validate_internal_client;
 
 const register = require("../api/register")
 
@@ -148,6 +150,30 @@ rediscl.connect().then(async () => {
     logger.info("Error is her");
   });
 });
+
+
+router.post("/healthcheck/internal", validate_internal_client, async (req, res) => {
+  if ("internal_client_id" in req)
+    res.send(
+      {
+        STATUS_CODE: STATUS.SUCCESS.CODE,
+        STATUS_MESSAGE: STATUS.SUCCESS.MSG,
+        [constants.SERVER_TIME]: Date.now()
+      }
+    );
+  else
+    res.send(
+      {
+        STATUS_CODE: STATUS.TOKEN_VALIDATION_FAILURE.CODE,
+        STATUS_MESSAGE: STATUS.TOKEN_VALIDATION_FAILURE.MSG,
+        [constants.SERVER_TIME]: Date.now()
+      }
+    );
+});
+
+
+
+
 
 
 module.exports = router;
