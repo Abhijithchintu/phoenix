@@ -24,15 +24,12 @@ const logger = require("../logger");
 
   function validationName(name){
     if(name === undefined){
-      logger.error("Name of the User not defined");
       throw new OAuthValidationError("Name is not defined");
     }
     if(name.length < constants.MIN_NAME_LEN ){
-      logger.error(name + " is too short");
       throw new OAuthValidationError("Name is too short, it should contain atleat 3 characters");
     }
     if(name.length > constants.MAX_NAME_LEN){
-      logger.error(name.slice(0, 41) + "...." + " is too long");
       throw new OAuthValidationError("Name is too long, it should contain only 40 characters");
     }
   }
@@ -44,15 +41,12 @@ const logger = require("../logger");
       throw new OAuthValidationError("Password is undefined");
     }
     if(password.length > constants.MAX_PASSWORD_LEN){
-      logger.error(password.slice(0,32) + "...." + " is too long");
       throw new OAuthValidationError("Password is too long, it should be in the range of (8-31)");
     }
     if(password.length < constants.MIN_PASSWORD_LEN){
-      logger.error(password + " is too short");
       throw new OAuthValidationError("Password is too short, it should be in the range of (8-31)");
     }
     if(!password.match(constants.PASSWORD_REGEX)){
-      logger.error(password + " did not match the regex");
       throw new OAuthValidationError("Password must contain atleast 1 Capital letter, 1 small letter and 1 special character");
     }
   }

@@ -62,7 +62,11 @@ router.post('/register', async (req, res) => {
     validation.validateUserRegisterRequest(req);
   } catch (error) {
     logger.error("This is Registration error", error);
-    return res.send(error.message);
+    if (error instanceof OAuthValidationError) {
+      return res.send(error.error_code);
+    }
+    else
+      return res.send("internal error");
   }
 
   if (await register.isExistingUserMobile(req.body.mobile)) {
@@ -85,10 +89,17 @@ router.post('/login', async (req, res) => {
     user_id_obj = await login.validateLogin(req);
     console.log('baby here it is')
     console.log(user_id_obj)
+    if (user_id_obj.length === 0)
+      throw new OAuthValidationError("error_msg", "error_code");
     user_id = user_id_obj[0].client_id
   } catch (error) {
     logger.error("This is Login error", error);
-    return res.send(error.message);
+    if (error instanceof OAuthValidationError) {
+      logger.error("validation error");
+      return res.send(error.error_code);
+    }
+    else
+      return res.send("internal error");
   }
   //here should we check if userid is null 
   logger.info("User details are correct and successfully logged in");
