@@ -1,7 +1,7 @@
 
 
 class internal {
-    generate_internal_client_token() {
+    static generate_internal_client_token() {
         const secret = 'abc'; // move secret, client_id to vault
         var token = jwt.sign({
             client_id: 12,
@@ -13,12 +13,12 @@ class internal {
     }
 
 
-    parseJwt(token) {
+    static parseJwt(token) {
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     }
 
 
-    get_api(req) {
+    static get_api(req) {
         var path = url.parse(req.url).pathname;
         if (!path.length < 1 && path[path.length - 1] == '/')
             path = path.substring(0, path.length - 1);
@@ -26,7 +26,7 @@ class internal {
     }
 
 
-    get_client_key(body, path) {
+    static get_client_key(body, path) {
         return new Promise((resolve, reject) => con.query(
             "SELECT c.key FROM phoenixOauth.client_permissions cp, phoenixOauth.clients c " +
             "WHERE c.client_id=? and c.status=1 and " +
@@ -42,9 +42,9 @@ class internal {
     }
 
 
-    async validate_internal_client(req, res, next) {
+    static async validate_internal_client(req, res, next) {
         try {
-            token = req.headers["jwt-token"] || req.headers["x-access-token"] || req.body.token;
+            var token = req.headers["jwt-token"] || req.headers["x-access-token"] || req.body.token;
             if (!token)
                 return next();
 
@@ -68,4 +68,4 @@ class internal {
     }
 }
 
-module.exports = {validate_internal_client, generate_internal_client_token};
+module.exports = internal;

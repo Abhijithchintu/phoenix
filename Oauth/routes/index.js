@@ -165,7 +165,7 @@ rediscl.connect().then(async () => {
 });
 
 
-router.post("/healthcheck/internal", validate_internal_client, async (req, res) => {
+router.post("/healthcheck/internal", validate_internal_client, async (req, res, next) => {
   if ("internal_client_id" in req)
     res.send(
       {
