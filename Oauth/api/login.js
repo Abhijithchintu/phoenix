@@ -38,7 +38,6 @@ class login {
   static async validate_jwt(req, res) {
     return new Promise((resolve, reject) => {
       let accesstoken = req.cookies.access_token || null;
-      console.log(accesstoken, " access token is here");
       let refreshtoken = req.cookies.refresh_token || null;
   
       if (accesstoken && refreshtoken) {

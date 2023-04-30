@@ -63,6 +63,7 @@ router.post('/register', async (req, res) => {
   } catch (error) {
     logger.error("This is Registration error", error);
     if (error instanceof OAuthValidationError) {
+      res.setHeader('content-type', 'text/plain');
       return res.send(error.error_code);
     }
     else
@@ -96,6 +97,7 @@ router.post('/login', async (req, res) => {
     logger.error("This is Login error", error);
     if (error instanceof OAuthValidationError) {
       logger.error("validation error");
+      res.setHeader('content-type', 'text/plain');
       return res.send(error.error_code);
     }
     else
