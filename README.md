@@ -4,7 +4,10 @@ simple sns with chat functionality
 1) Winston library for loggers.
     npm i winston
 2) Express package 
-    npm i express
+    npm i express    
+
+## APIs
+[api contracts](https://manu156.github.io/phoenix/)
 
 ## commands for starting website
 run these commands from phoenix path (instead of going to each service and running commands individually, we have collectively configured them from phoenix main folder)  
