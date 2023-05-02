@@ -1,21 +1,20 @@
 ---
 swagger: "2.0"
 info:
-  description: "Sample\
-    \ --."
+  description: "phoenix backend APIs. Services: OAuth"
   version: "0.1.0"
   title: "phoenix"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: ""
-basePath: ""
+host: "localhost"
+basePath: "/"
 tags:
 - name: "stats"
   description: ""
   externalDocs:
     description: ""
-    url: ""
+    url: "uri:"
 - name: "register"
   description: ""
 schemes:
@@ -33,7 +32,8 @@ paths:
       - "application/json"
       responses:
         default:
-          description: "success"
+          description: health check response
+
 externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+  description: "Documentation"
+  url: "https://manu156.github.io/phoenix/"
