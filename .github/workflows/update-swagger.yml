@@ -37,7 +37,7 @@ jobs:
           sed -i "s|src=\"./|src=\"dist/|g" index.html
           sed -i "s|href=\"index|href=\"dist/index|g" index.html
           # Update current release
-          echo ${{ steps.swagger-ui.outputs.release_tag }} > swagger-ui.version
+          echo ${{ steps.swagger-ui.outputs.release_tag }} > docs/swagger-ui.version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
