@@ -1,16 +1,18 @@
 # phoenix
-simple sns with chat functionality
-## Packages needed to run locally
-1) Winston library for loggers.
-    npm i winston
-2) Express package 
-    npm i express    
+A simple socail networking site with chat features and ability to manage connections.  
+Architecture: each aspect(like chat, auth) has own service. All the services are implemented in node.js+express.js. Frontend implementation is in react.js. see [documentation](Documentation) for more details.
 
-## APIs
-[api contracts](https://manu156.github.io/phoenix/)
+## Documentation
+[Documentaion](https://manu156.github.io/phoenix/)  
+[APIs](https://manu156.github.io/phoenix/)
 
-## commands for starting website
-run these commands from phoenix path (instead of going to each service and running commands individually, we have collectively configured them from phoenix main folder)  
-a. npm install: to install node_modules in oauth, people, chat and phoenixfe.   
-b. npm run removen: to remove already installed node modules and packagae-lock.json file in above mentioned services.  
-c. npm run start: It starts the node in oauth, people and chat services. And also run build in phoenixfe.   
+## Quick Guide
+All the commands can be run from root which will be execute for each service.  
+Install required packages
+```bash
+npm run install
+```
+Start all services
+```bash
+npm start
+```
