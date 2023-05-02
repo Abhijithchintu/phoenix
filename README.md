@@ -1,6 +1,6 @@
 # phoenix
 A simple socail networking site with chat features and ability to manage connections.  
-Architecture: each aspect(like chat, auth) has own service. All the services are implemented in node.js+express.js. Frontend implementation is in react.js. see [documentation](Documentation) for more details.
+Architecture: each aspect(like chat, auth) has own service. All the services are implemented in node.js+express.js. Frontend implementation is in react.js. see documentation for more details.
 
 ## Documentation
 [Documentaion](https://manu156.github.io/phoenix/)  
