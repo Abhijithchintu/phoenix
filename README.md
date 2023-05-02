@@ -4,7 +4,7 @@ Architecture: each aspect(like chat, auth) has own service. All the services are
 
 ## Documentation
 [Documentaion](https://manu156.github.io/phoenix/)  
-[APIs](https://manu156.github.io/phoenix/apis/)
+[APIs](https://manu156.github.io/phoenix/apis)
 
 ## Quick Guide
 All the commands can be run from root which will be execute for each service.  
