@@ -9,6 +9,7 @@
 - bash/zsh for vault dev setup
 - docsify (documentation only)
 - swagger (documentation only)
+
 # Build/Deploy/Run
 ## Configuration
 Add the relevant credentials/config in vault setup, if running locally use vault_setup.sh
