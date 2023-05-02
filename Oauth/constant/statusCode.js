@@ -28,5 +28,5 @@ module.exports = Object.freeze({
     OAREV_1014: "Name is too short, it should contain atleat 3 characters",
     OAREV_1015: "Name is too long, it should contain only 40 characters",
     OAREV_1016: "Mobile number is already registered",
-
+    OALOV_1017: "Invalid username or mobile",
 });

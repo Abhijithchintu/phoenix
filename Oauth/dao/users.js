@@ -43,7 +43,6 @@ class Users {
                 "WHERE (mobile=? or user_name=?) AND status=1 LIMIT 1;",
                 [mobile, user_name],
                 (error, result) => {
-                    console.log(result);
                     if (!result.length)
                         resolve(null);
                     resolve(result[0]);

@@ -8,6 +8,7 @@ module.exports = function api_wrapper(fn) {
         } catch (error) {
             if (error instanceof OAuthValidationError) {
                 res.setHeader('content-type', 'text/json');
+                res.status(400);
                 return res.send(error.to_json());
             } else {
                 next(error);
