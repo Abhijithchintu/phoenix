@@ -3,8 +3,12 @@ class OAuthValidationError extends Error {
         super(message);
         this.error_code = error_code;
     }
-    get message() {
-        return this.message;
+
+    to_json() {
+        return {
+            "error_code": this.error_code,
+            "error_message": this.message
+        };
     }
 }
 

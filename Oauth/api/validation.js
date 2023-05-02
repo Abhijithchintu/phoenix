@@ -1,4 +1,4 @@
-const constants = require('../config/constants');
+const constants = require('../constant/constants');
 const OAuthValidationError = require("../error/OAuthValidationError");
 const logger = require("../logger");
 

@@ -1,40 +1,79 @@
-const logger = require("../logger");
-const con = require('../config/condb')
-const OAuthValidationError = require("../error/OAuthValidationError");
 const jwt = require("jsonwebtoken");
-const jwt_secret = "jwtfanhere";
-const jwt_expiration = 60 * 10;
-const jwt_refresh_expiration = 60 * 60 * 24 * 30;
+const config = require('config');
+
+const logger = require("../logger");
+const OAuthValidationError = require("../error/OAuthValidationError");
+const constants = require("../constant/constants");
+const Users = require("../dao/users");
+const statusCode = require("../constant/statusCode");
+
+const jwt_secret = config.get("jwt_secret");
+const jwt_expiration = constants.jwt_expiration;
+const jwt_refresh_expiration = constants.jwt_refresh_expiration;
+
 
 class login {
-  static async validateLogin(req){
-    logger.debug("Validating user login details");
-    var a = new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=? or user_name=?) AND status=1 LIMIT 1;", [req.body.userid, req.body.userid], function (err, result) {
-      // console.log(result.length===1);
-      if (err) throw err;
-      if(result.length === 0){
-        logger.error(req.body.userid + " :userid not found in the registry");
-      }
-      return resolve(result.length === 1);
+
+  static async login(req, res) {
+    let user_id = await login.validateLogin(req);
+    logger.info("User details are correct and successfully logged in");
+
+    let refresh_token = login.generate_refresh_token(64);
+    let refresh_token_maxage = new Date() + jwt_refresh_expiration;
+
+    let token = jwt.sign({ uid: user_id }, jwt_secret, {
+      expiresIn: jwt_expiration
+    });
+
+    res.cookie("access_token", token, {
+      httpOnly: true
+    });
+    res.cookie("refresh_token", refresh_token, {
+      httpOnly: true
+    });
+
+
+    console.log("here is the user_id", user_id);
+    let uid = JSON.stringify(user_id);
+    console.log("here is the string for redis", JSON.stringify({
+      refresh_token: refresh_token,
+      expires: refresh_token_maxage
     }));
-    
-    if(await a){
-    var b = new Promise((resolve, reject) => con.query("SELECT * FROM phoenixOauth.users WHERE ((mobile=? or user_name=?) and password=?) AND status=1 LIMIT 1;", [req.body.userid, req.body.userid, req.body.password], function (err, result) {
-        if (err) throw err;
-        if(!result.length){
-          logger.error("password is incorrect");
+    await redis_client.set(uid, JSON.stringify({
+          refresh_token: refresh_token,
+          expires: refresh_token_maxage
+        }), function (err, result) {
+          if (err) throw (err);
+          console.log(result);
         }
-        return resolve(result);
-      })); 
-    }
-    else{
-      throw new OAuthValidationError("userid is wrong, try again");
-    }
-    if(!(await b)){
-      throw new OAuthValidationError("Password is incorrect, try again"); 
-    }
-    return b; //raks forgot to return sql query just passing nothing from here before and reading user id there
+    );
+
+
+    var siftvalue = await redis_client.get(uid);
+    console.log(siftvalue, " here it is");
+    return res.send(" You have successfully logged in");
+
   }
+
+  static async validateLogin(req){
+    const user = await Users.get_by_mobile_or_user_name(req.body.mobile, req.body.user_name);
+    if (!user)
+      throw new OAuthValidationError(statusCode["OAE-1000"], "OAE-1000");
+    if (req.body.password !== user["password"])
+      throw new OAuthValidationError(statusCode["OAE-1001"], "OAE-1001");
+    return user["client_id"];
+  }
+
+  static async profile(req, res) {
+    login.validate_jwt(req, res).then(result => {
+      console.log("You have successfully logged in with Authentication and Authorization. <3");
+      res.send("you are in profile page")
+    })
+        .catch(error => {
+          throw error;
+        });
+  }
+
   static async validate_jwt(req, res) {
     return new Promise((resolve, reject) => {
       let accesstoken = req.cookies.access_token || null;

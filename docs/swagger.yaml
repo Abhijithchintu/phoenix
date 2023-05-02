@@ -1,0 +1,39 @@
+---
+swagger: "2.0"
+info:
+  description: "Sample\
+    \ --."
+  version: "0.1.0"
+  title: "phoenix"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: ""
+basePath: ""
+tags:
+- name: "stats"
+  description: ""
+  externalDocs:
+    description: ""
+    url: ""
+- name: "register"
+  description: ""
+schemes:
+- "https"
+- "http"
+paths:
+  /health-check:
+    get:
+      tags:
+      - "stats"
+      summary: "health check"
+      description: ""
+      operationId: "health-check"
+      produces:
+      - "application/json"
+      responses:
+        default:
+          description: "success"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
