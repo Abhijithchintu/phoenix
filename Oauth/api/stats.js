@@ -19,8 +19,8 @@ class stats {
     static health_check() {
         return {
             "message": "health is ok",
-                "uptime": process.uptime(),
-                "timestamp": Date(Date.now())
+            "uptime": process.uptime(),
+            "timestamp": Date(Date.now())
         };
     }
 }

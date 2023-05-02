@@ -1,6 +1,8 @@
+const status_code = require("../constant/statusCode");
+
 class OAuthValidationError extends Error {
-    constructor(message, error_code) {
-        super(message);
+    constructor(error_code) {
+        super(status_code[error_code]);
         this.error_code = error_code;
     }
 

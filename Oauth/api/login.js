@@ -1,22 +1,30 @@
 const jwt = require("jsonwebtoken");
 const config = require('config');
+const redis = require("redis");
 
 const logger = require("../logger");
 const OAuthValidationError = require("../error/OAuthValidationError");
 const constants = require("../constant/constants");
 const Users = require("../dao/users");
 const statusCode = require("../constant/statusCode");
+const redis_client = redis.createClient();
 
 const jwt_secret = config.get("jwt_secret");
 const jwt_expiration = constants.jwt_expiration;
 const jwt_refresh_expiration = constants.jwt_refresh_expiration;
 
+redis_client.connect().then(async () => {
+  redis_client.on('error', err => {
+    console.log('Error ' + err);
+    logger.info("Error is her");
+  });
+});
 
 class login {
 
   static async login(req, res) {
     let user_id = await login.validateLogin(req);
-    logger.info("User details are correct and successfully logged in");
+    logger.info("login details validated");
 
     let refresh_token = login.generate_refresh_token(64);
     let refresh_token_maxage = new Date() + jwt_refresh_expiration;
@@ -32,8 +40,6 @@ class login {
       httpOnly: true
     });
 
-
-    console.log("here is the user_id", user_id);
     let uid = JSON.stringify(user_id);
     console.log("here is the string for redis", JSON.stringify({
       refresh_token: refresh_token,
@@ -48,11 +54,9 @@ class login {
         }
     );
 
-
     var siftvalue = await redis_client.get(uid);
     console.log(siftvalue, " here it is");
     return res.send(" You have successfully logged in");
-
   }
 
   static async validateLogin(req){
@@ -102,7 +106,7 @@ class login {
                 
                 if (redis_token.expires > new Date()) {
   
-                  let refresh_token = generate_refresh_token(64);
+                  let refresh_token = login.generate_refresh_token(64);
   
                   res.cookie("__refresh_token", refresh_token, {
                     httpOnly: true

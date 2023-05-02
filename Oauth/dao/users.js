@@ -4,7 +4,7 @@ const logger = require("../logger");
 const con = db_connection();
 
 class Users {
-    constructor(client_id, status, user_name, name, gender, dob, photo_id, password, mobile, created_at, updated_at) {
+    constructor(client_id, status, user_name, mobile, password, name, gender, dob, photo_id, created_at, updated_at) {
         this.client_id = client_id;
         this.status = status;
         this.user_name = user_name;
@@ -17,16 +17,23 @@ class Users {
         this.updated_at = updated_at;
     }
 
-    async insert() {
-        return await con.query(
-            "INSERT into phoenixOauth.users(status, user_name, name, password, mobile) " +
-            "VALUES(1, ?, ?, ?, ?);",
-            [this.status, this.user_name, this.user_name, this.password, this.mobile],
-            function (err, result) {
-                if (err) throw err;
-                    return 0;//todo
-            }
-        );
+    static async create_new_user(user_name, gender, name, password, mobile, dob) {
+        return await Users._insert(user_name, gender, name, password, mobile, dob);
+    }
+
+    static async _insert(user_name, gender, name, password, mobile, dob) {
+        return new Promise((resolve) => {
+            con.query(
+                "INSERT into phoenixOauth.users(status, user_name, gender, name, password, mobile, dob) " +
+                "VALUES(1, ?, ?, ?, ?, ?, ?);",
+                [user_name, gender, name, password, mobile, dob],
+                function (err, result) {
+                    if (err)
+                        throw err;
+                    resolve(result["insertId"]);
+                }
+            );
+        });
     }
 
     static async get_by_mobile_or_user_name(mobile, user_name) {
@@ -43,6 +50,17 @@ class Users {
                 }
             );
         });
+    }
+
+    static async is_existing_user(mobile, user_name) {
+        return new Promise((resolve, reject) => con.query(
+            "SELECT client_id FROM phoenixOauth.users " +
+            "WHERE (mobile=? OR user_name=?) AND status=1 LIMIT 1;",
+            [mobile, user_name],
+            function (err, result) {
+                if (err) throw err;
+                resolve(result.length === 1);
+            }));
     }
 
 }

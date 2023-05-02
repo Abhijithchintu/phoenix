@@ -34,11 +34,11 @@ router.get('/health-check', async (req, res) => {
 })
 
 router.post('/register', api_wrapper(async (req, res) => {
-  return res.send(register.register(req, res));
+  return res.send(register.register(req));
 }));
 
 router.post('/login', api_wrapper(async (req, res) => {
-  return res.send(login.login(req, res));
+  return login.login(req, res);
 }));
 
 router.post("/profile", api_wrapper((req, res) => {

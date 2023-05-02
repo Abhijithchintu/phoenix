@@ -1,106 +1,79 @@
 const constants = require('../constant/constants');
 const OAuthValidationError = require("../error/OAuthValidationError");
 const logger = require("../logger");
-
-  function validateUserRegisterRequest(req){
+const Users = require("../dao/users");
+  function validate_user_register_request(req){
     logger.info("Validating all user inputs in registration route");
-
-    logger.debug("Validating userName in regitration route");
-    validationUserName(req.body.userName);
-    logger.info(req.body.userName + " : userName is validated");
-
-    logger.debug("Validating Mobile Number in registration route");
-    validationMobileNumber(req.body.mobile);
-    logger.info(req.body.mobile + " :mobile number is validated");
-
-    logger.debug("validating password in registration route");
-    validationPassword(req.body.password);
-    logger.info("Password is validated");
-
-    logger.debug("Validating Name of the User in regitration route");
-    validationName(req.body.name);
-    logger.info(req.body.name + " : Name of the user is validated");
+    validate_user_name(req.body.user_name);
+    validate_mobile_number(req.body.mobile);
+    validate_password(req.body.password);
+    validate_name(req.body.name);
   }
 
-  function validationName(name){
-    if(name === undefined){
-      throw new OAuthValidationError("Name is not defined");
+  async function validate_if_user_exists(req) {
+    if (await Users.is_existing_user(req.body.mobile, req.body.user_name)) {
+      throw new OAuthValidationError("OAREV_1016");
     }
-    if(name.length < constants.MIN_NAME_LEN ){
-      throw new OAuthValidationError("Name is too short, it should contain atleat 3 characters");
-    }
-    if(name.length > constants.MAX_NAME_LEN){
-      throw new OAuthValidationError("Name is too long, it should contain only 40 characters");
-    }
+  }
+
+  function validate_name(name){
+    if(name === undefined || name === null)
+      throw new OAuthValidationError("OAREV_1013");
+
+    if(name.length < constants.MIN_NAME_LEN )
+      throw new OAuthValidationError("OAREV_1014");
+
+    if(name.length > constants.MAX_NAME_LEN)
+      throw new OAuthValidationError("OAREV_1015");
   }
   
   
-  function validationPassword(password){
-    if(password === undefined){
-      logger.error("Password not defined");
-      throw new OAuthValidationError("Password is undefined");
-    }
-    if(password.length > constants.MAX_PASSWORD_LEN){
-      throw new OAuthValidationError("Password is too long, it should be in the range of (8-31)");
-    }
-    if(password.length < constants.MIN_PASSWORD_LEN){
-      throw new OAuthValidationError("Password is too short, it should be in the range of (8-31)");
-    }
-    if(!password.match(constants.PASSWORD_REGEX)){
-      throw new OAuthValidationError("Password must contain atleast 1 Capital letter, 1 small letter and 1 special character");
-    }
+  function validate_password(password){
+    if(password === undefined || password === null)
+      throw new OAuthValidationError("OAREV_1010");
+
+    if(password.length > constants.MAX_PASSWORD_LEN)
+      throw new OAuthValidationError("OAREV_1011");
+
+    if(password.length < constants.MIN_PASSWORD_LEN)
+      throw new OAuthValidationError("OAREV_1012");
+
+    if(!password.match(constants.PASSWORD_REGEX))
+      throw new OAuthValidationError("OAREV_1013");
+
   }
   
-  function  validationMobileNumber(mobile){
-    if(mobile === undefined){
-      logger.error("Mobile Number not defined");
-      throw new OAuthValidationError("Mobile Number is undefined");
-    }
-    if(mobile === null){
-      logger.error(mobile + " Mobile number is empty");
-      throw new OAuthValidationError("Mobile number is empty");
-    }
-    if(mobile.length > constants.MAX_MOBILE_LEN){
-      logger.error(mobile.slice(0,11) + "..." + " is too long");
-      throw new OAuthValidationError("Mobile number is too long, it should contain 10 digits");
-    }
-    if(mobile.length < constants.MIN_MOBILE_LEN){
-      logger.error(mobile + " is too short");
-      throw new OAuthValidationError("Mobile number is too short, it should contain 10 digits");
-    }
-    if(!mobile.match(constants.MOBILE_REGEX)){
-      logger.error(mobile + " did not match the regex");
-      throw new OAuthValidationError("Mobile Number should only contain 10 digts");
-    }
+  function  validate_mobile_number(mobile){
+    if (mobile === undefined || mobile === null)
+      throw new OAuthValidationError("OAREV_1006");
+
+    if (mobile.length > constants.MAX_MOBILE_LEN)
+      throw new OAuthValidationError("OAREV_1007");
+
+    if (mobile.length < constants.MIN_MOBILE_LEN)
+      throw new OAuthValidationError("OAREV_1008");
+
+    if(!mobile.match(constants.MOBILE_REGEX))
+      throw new OAuthValidationError("OAREV_1009");
+
   }
   
-  function validationUserName(userName){
-    if(userName === undefined){
-      logger.error("userName not defined");
-      throw new OAuthValidationError("User Name is undefined");
-    }
-    if(userName === null){
-      logger.error(userName + " userName is empty")
-      throw new OAuthValidationError("User Name is Empty");
-    }
+  function validate_user_name(userName){
+    if(userName === undefined || userName === null)
+      throw new OAuthValidationError("OAREV_1000");
+
     userName = userName.toLowerCase();
-    if(userName.length > constants.MAX_USERNAME_LEN){
-      logger.error(userName.slice(0-21) + "...." + " is too long");
-      throw new OAuthValidationError("User Name is too long, it should be in the range of (8-20)");
-    }
-    if(userName.length < constants.MIN_USERNAME_LEN){
-      logger.error(userName + " is too short");
-      throw new OAuthValidationError("User Name is too short, it should be in the range of (8-20)");
-    }
-  
+    if(userName.length > constants.MAX_USERNAME_LEN)
+      throw new OAuthValidationError("OAREV_1003");
+    if(userName.length < constants.MIN_USERNAME_LEN)
+      throw new OAuthValidationError("OAREV_1004");
     
-    if(!userName.match(constants.USERNAME_REGEX)){
-      logger.error(userName + " did not match the regex");
-      throw new OAuthValidationError("User Name should start with an alphabet, it should contain only alphabets and numbers");
-    }
+    if(!userName.match(constants.USERNAME_REGEX))
+      throw new OAuthValidationError("OAREV_1005");
   }
 
 
 
 
-module.exports = {validateUserRegisterRequest, validationMobileNumber, validationName, validationPassword, validationUserName};
+module.exports = { validate_user_register_request: validate_user_register_request, validationMobileNumber: validate_mobile_number, validationName: validate_name,
+  validationPassword: validate_password, validationUserName: validate_user_name, validate_if_user_exists };
