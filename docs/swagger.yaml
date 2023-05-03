@@ -1,0 +1,39 @@
+---
+swagger: "2.0"
+info:
+  description: "phoenix backend APIs. Services: OAuth"
+  version: "0.1.0"
+  title: "phoenix"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost"
+basePath: "/"
+tags:
+- name: "stats"
+  description: ""
+  externalDocs:
+    description: ""
+    url: "uri:"
+- name: "register"
+  description: ""
+schemes:
+- "https"
+- "http"
+paths:
+  /health-check:
+    get:
+      tags:
+      - "stats"
+      summary: "health check"
+      description: ""
+      operationId: "health-check"
+      produces:
+      - "application/json"
+      responses:
+        default:
+          description: health check response
+
+externalDocs:
+  description: "Documentation"
+  url: "https://manu156.github.io/phoenix/"

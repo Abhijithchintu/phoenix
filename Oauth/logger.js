@@ -1,4 +1,4 @@
-const {createLogger, format, transports} = require("winston");
+const { createLogger, format, transports } = require("winston");
 
 const logger = createLogger({
   format: format.combine(
@@ -13,6 +13,6 @@ const logger = createLogger({
       new transports.File({filename: '../logfiles/info.log', level: 'info'}),
       new transports.File({filename: '../logfiles/debug.log', level: 'debug'})
   ]
-});;
+});
 
 module.exports = logger;
