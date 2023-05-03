@@ -13,7 +13,7 @@ const app = express();
 
 const limiter = RateLimit({
   windowMs: 60 * 1000,
-  max: 5
+  max: 50
 });
 
 app.set('views', path.join(__dirname, 'views'));
