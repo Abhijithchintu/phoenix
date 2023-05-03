@@ -1,35 +1,33 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
 
-var app = require('../app');
-var debug = require('debug')('chat:server');
-var http = require('http');
+const debug = require('debug')('chat:server');
+const http = require('http');
 require('dotenv').config();
 
-/**
- * Get port from environment and store in Express.
- */
+const {dbconnect} = require('../config/default')
+
 
 var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
 
-/**
- * Create HTTP server.
- */
+let server
 
-var server = http.createServer(app);
+const init = async () => {
+  try{
+    await dbconnect(process.env.MONGO_URI)
+    const app = require('../app');
+    app.set('port', port);
+    server = http.createServer(app);
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  }
+  catch(err){
+    console.log("Server failed to start with error:", err)
+  }
+}
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
+init()
 /**
  * Normalize a port into a number, string, or false.
  */
