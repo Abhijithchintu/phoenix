@@ -1,11 +1,11 @@
 # For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
+# to commit it to your dao.
 #
 # You may wish to alter this file to override the set of languages analyzed,
 # or to provide custom queries or build logic.
 #
 # ******** NOTE ********
-# We have attempted to detect the languages in your repository. Please check
+# We have attempted to detect the languages in your dao. Please check
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
@@ -17,6 +17,9 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/'
+      - 'logfiles/'
   schedule:
     - cron: '17 15 * * 5'
 
@@ -39,7 +42,7 @@ jobs:
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
-    - name: Checkout repository
+    - name: Checkout dao
       uses: actions/checkout@v3
 
     # Initializes the CodeQL tools for scanning.

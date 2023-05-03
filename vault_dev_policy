@@ -1,0 +1,13 @@
+
+
+path "secret/data/oauth/*" {
+  capabilities = [ "read" ]
+}
+
+path "secret/data/chat/*" {
+  capabilities = [ "read" ]
+}
+
+path "secret/data/people/*" {
+  capabilities = [ "read" ]
+}

@@ -1,9 +1,16 @@
-class OAuthValidationError extends Error{
-    constructor(message) {
-        super(message);
+const status_code = require("../constant/statusCode");
+
+class OAuthValidationError extends Error {
+    constructor(error_code) {
+        super(status_code[error_code]);
+        this.error_code = error_code;
     }
-    get message(){
-        return this.message;
+
+    to_json() {
+        return {
+            "error_code": this.error_code,
+            "error_message": this.message
+        };
     }
 }
 

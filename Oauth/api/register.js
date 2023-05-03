@@ -1,39 +1,20 @@
+const jwt = require("jsonwebtoken");
+
 const logger = require("../logger");
-const con = require('../config/condb')
+const con = require('../external/condb');
+const validation = require("./validation");
+const Users = require("../dao/users");
+const constants = require("../constant/constants");
+const config = require("config");
 
-  
-class register{
-    static createUser(userName, name, mobile, password) {
-        logger.debug(" Creating User");
-        con.query("INSERT into phoenixOauth.users(status, user_name, name, password, mobile) VALUES(1, ?, ?, ?, ?);", [userName.toLowerCase(), name, password, mobile], function (err, result) {
-          if (err) throw err;
-          return 0;
-        });
+
+class register {
+    static async register(req) {
+        validation.validate_user_register_request(req);
+        await validation.validate_if_user_exists(req)
+        const user = await Users.create_new_user(req.body.user_name, req.body.gender, req.body.name, req.body.password,
+            req.body.mobile, req.body.dob);
     }
-
-    static async isExistingUserMobile(mobile) {
-  
-        logger.debug("Checking the Registering mobile number in the database");
-      
-        return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (mobile=?) AND status=1 LIMIT 1;", [mobile], function (err, result) {
-          if (err) throw err;
-          resolve(result.length === 1);
-        }));
-      
-    }
-
-    static async isExistingUserUserName(userName) {
-  
-        logger.debug("Checking the Registering user name in the database");
-      
-        return new Promise((resolve, reject) => con.query("SELECT client_id FROM phoenixOauth.users WHERE (user_name=?) AND status=1 LIMIT 1;", [userName.toLowerCase()], function (err, result) {
-          
-          if (err) throw err;
-          resolve(result.length === 1);
-        }));
-      
-    }
-
 }
 
 module.exports = register

@@ -1,42 +1,35 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
-var app = require('../app');
-var debug = require('debug')('oauth:server');
-var http = require('http');
 require('dotenv').config();
 
-/**
- * Get port from environment and store in Express.
- */
+const debug = require('debug')('oauth:server');
+const http = require('http');
+const { resolveAsyncConfigs } = require('config/async');
+const config = require('config');
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+const vault = require("../external/vault");
 
-/**
- * Create HTTP server.
- */
+const port = normalizePort(process.env.PORT || '3000');
+let server;
 
-var server = http.createServer(app);
+const init = async () => {
+  await vault.init().then(() => console.log("vault initialized"));
+  await resolveAsyncConfigs(config).then(() => console.log("config initialized"));
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+  const app = require('../app');
+  app.set('port', port);
+  server = http.createServer(app);
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+}
+init()
+    .then(() => console.log("server started successfully"))
+    .catch((reason) => {console.log("Server failed to start with error:", reason)});
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
-
+  let port = parseInt(val, 10);
   if (isNaN(port)) {
     // named pipe
     return val;
@@ -50,16 +43,12 @@ function normalizePort(val) {
   return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
 
-  var bind = typeof port === 'string'
+  let bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -78,13 +67,10 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
+  let addr = server.address();
+  let bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
