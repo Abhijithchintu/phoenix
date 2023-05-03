@@ -1,3 +1,5 @@
+let {dbconnect} = require('./config/databaseconf')
+require('dotenv').config()
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -38,4 +40,14 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+//connecting to db
+const start = async () => {
+  try{
+    await dbconnect(process.env.MONGO_URI)
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+start()
 module.exports = app;

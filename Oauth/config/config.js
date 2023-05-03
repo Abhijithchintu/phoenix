@@ -3,7 +3,7 @@ var config = {
         database: {
             host:       '127.0.0.1',
             user:       'root',
-            password:   '',
+            password:   'Abhijith@1',
             port: 3306
         }
     },
@@ -11,7 +11,7 @@ var config = {
         database: {
             host:       '127.0.0.1',
             user:       'root',
-            password:   '',
+            password:   'Abhijith@1',
             port: 3306
         }
     }
