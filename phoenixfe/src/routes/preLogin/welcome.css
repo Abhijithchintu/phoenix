@@ -1,0 +1,24 @@
+.welcome {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 100px;
+}
+
+input[type="submit"] {
+    margin-top: 10px;
+    margin-left: 70px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    background: rgba(120, 12, 234, 0.49);
+    border: 0;
+    color: #fff;
+    padding: 10px 20px;
+    align-self: center;
+}
+
+input[type="submit"]:hover {
+    background: rgba(120, 12, 234, 0.6);
+}

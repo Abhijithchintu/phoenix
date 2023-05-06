@@ -3,7 +3,7 @@
     "Oauth": "cd Oauth && npm start",
     "People": "cd People && npm start",
     "Chat": "cd Chat && npm start",
-    "phoenixfe": "cd phoenixfe && npm run build",
+    "phoenixfe": "cd phoenixfe && npm start",
     "Oauthinstall": "cd Oauth && npm install",
     "Peopleinstall": "cd People && npm install",
     "Chatinstall": "cd Chat && npm install",
