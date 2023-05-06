@@ -1,6 +1,7 @@
 ---
 name: Feature
 title: ''
+about: add feature
 labels: enhancement
 assignees: ''
 
