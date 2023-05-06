@@ -2,6 +2,7 @@
 name: Feature
 title: ''
 labels: enhancement
+about: add feature
 assignees: ''
 
 ---
