@@ -6,12 +6,18 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "config": "^3.3.9",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
     "dotenv": "^16.0.3",
+    "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "jsonwebtoken": "^9.0.0",
     "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11"
+    "mysql": "^2.18.1",
+    "node-fetch": "^2.6.9",
+    "node-vault": "^0.9.22",
+    "pug": "2.0.0-beta11",
+    "winston": "^3.8.2"
   }
 }
