@@ -15,7 +15,6 @@ const redis_client = redis.createClient();
 
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
-router.use(express.static(path.resolve(__dirname, '../../phoenixfe/build')));
 
 redis_client.connect().then(async () => {
   redis_client.on('error', err => {
@@ -47,10 +46,6 @@ router.post("/profile", api_wrapper((req, res) => {
 
 router.post("/healthcheck/internal", validate_internal_client, async (req, res, next) => {
   return res.send(stats.internal_healthcheck(req, res));
-});
-
-router.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../phoenixfe/build', 'index.html'));
 });
 
 
