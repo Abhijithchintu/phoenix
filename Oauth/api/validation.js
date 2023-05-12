@@ -1,16 +1,6 @@
-<<<<<<< HEAD:Oauth/validation.js
-const constants = require('./config/constants');
-const OAuthValidationError = require("./error/OAuthValidationError");
-const logger = require("./logger");
-
-
-
-
-=======
 const constants = require('../config/constants');
 const OAuthValidationError = require("../error/OAuthValidationError");
 const logger = require("../logger");
->>>>>>> main:Oauth/api/validation.js
 
   function validateUserRegisterRequest(req){
     logger.info("Validating all user inputs in registration route");

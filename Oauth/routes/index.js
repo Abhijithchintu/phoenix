@@ -1,13 +1,13 @@
 const path = require('path');
 
 const constants = require('../config/constants');
-var express = require('express');
-var router = express.Router();
-var env = process.env.NODE_ENV || 'local';
-var config = require('../config/config.js')[env];
+const express = require('express');
+const router = express.Router();
+const env = process.env.NODE_ENV || 'local';
+const config = require('../config/config.js')[env];
 
 const PORT = process.env.PORT || "3000";
-var validation = require("../api/validation");
+const validation = require("../api/validation");
 const logger = require("../logger");
 
 const OAuthValidationError = require("../error/OAuthValidationError");
@@ -21,15 +21,21 @@ const jwt_refresh_expiration = 60 * 60 * 24 * 30;
 
 const redis = require("redis");
 const jwt = require("jsonwebtoken");
+const crypto = require('crypto');
 
-var rediscl = redis.createClient();
+const rediscl = redis.createClient();
 
-rediscl.connect().then(async () => {
-  rediscl.on('error', err => {
-    console.log('Error ' + err);
-    logger.info("Error is here");
+rediscl.connect() .then(async () => {
+  rediscl.on('error', err => { 
+    logger.error("Redis Error: " + err) ;
+    throw err ;
+  });
+  rediscl.on('ready', async () => {
+    logger.info("Connected to redis");
   });
 });
+
+
 
 router.use(express.urlencoded({ extended: true })); //bodyparser
 router.use(express.json());
@@ -71,40 +77,35 @@ router.post('/register', async (req, res) => {
 });
 
 
-async function redisGet(key) {
-  let tokenValue = await rediscl.get(key, (err, res) => {
-    if (err) throw err;
-  });
-  tokenValue = JSON.parse(tokenValue);
-  return tokenValue;
-};
-
-
-async function redisSet(key, key, skey){
-  await rediscl.set(
-    key,
-    JSON.stringify({
-      refresh_token: key,
-      expires: skey
-    })
-  );
+async function redisGet(key){
+  const redisValue = await rediscl.get(key , (err, data) => {
+    if (err) {
+      reject(err);
+    } else {
+      resolve(data);
+    }
+  })
+  return redisValue;
 }
+
+
+const jwtSecret = "Veediveedigummadipandu";
 
 router.post('/login', async (req, res) => {
   logger.debug("This is login route");
+  var uniqueid;
   try {
-    await login.validateLogin(req);
-
+    uniqueid = await login.validateLogin(req);
   } catch (error) {
     logger.error("This is Login error", error);
     return res.send(error.message);
   }
   logger.info("User details are correct and successfully logged in");
 
-  let refresh_token = generate_refresh_token(64);
-  let refresh_token_maxage = new Date() + jwt_refresh_expiration;
-
-  let token = jwt.sign({id: refresh_token}, jwt_secret, {
+  const token = jwt.sign({id: uniqueid}, jwtSecret, {
+    expiresIn: jwt_expiration
+  });
+  const refresh_token = jwt.sign({id: uniqueid}, jwtSecret, {
     expiresIn: jwt_expiration
   });
 
@@ -115,13 +116,19 @@ router.post('/login', async (req, res) => {
     httpOnly: true
   });
 
+  logger.info("Uniqueid: " + uniqueid);
 
 
-  try{
-    await redisSet(refresh_token, refresh_token, refresh_token_maxage);
-  } catch(error){
-    return res.send("error");
-  }
+
+  rediscl.set(
+    JSON.stringify(uniqueid),
+    JSON.stringify({
+      refresh_token: refresh_token,
+      token: token
+    })
+  );
+  const testerSet = await redisGet(JSON.stringify(uniqueid));
+  console.log("<<<<<>>>>>>>" + testerSet);
 
   return res.send(" You have successfully logged in");
 
@@ -132,110 +139,78 @@ router.post('/login', async (req, res) => {
 
 
 
-async function validate_jwt(req, res) {
-   
-  let accesstoken = req.cookies.access_token || null;
-  let refreshtoken = req.cookies.refresh_token || null;
-  if (accesstoken && refreshtoken) {
 
-    jwt.verify(accesstoken, jwt_secret, async function (err, decoded) {
-      if (err) {
-        logger.info("Entered into if err" + err);
-        if (err.name === "TokenExpiredError") {
-          let redis_token = await redisGet(refreshtoken);
-          if (
-            !redis_token ||
-            redis_token.refresh_token !== refreshtoken
-          ) {
-            logger.info("Entered into hacker region # 1");
-            throw new OAuthValidationError("Nice try ;-)");
-          } 
-          else {
-            logger.info("Entered into else of hacker # 1");
-            if (redis_token.expires > new Date()) {
-              logger.info("Entered into Expiration if loop");
-
-              let refresh_token = generate_refresh_token(64);
-
-              res.cookie("__refresh_token", refresh_token, {
-                httpOnly: true
-              });
-
-              let refresh_token_maxage = new Date() + jwt_refresh_expiration;
-
-              await redisSet(refresh_token, refresh_token, refresh_token_maxage);
-
-              let token = jwt.sign({id: refresh_token}, jwt_secret, {
-                expiresIn: jwt_expiration
-              });
-              
-              res.cookie("__access_token", token, {
-                httpOnly: true
-              });
-              res.cookie("session_id", refresh_token, {
-                httponly: true
-              })
-            }
-            logger.info("Authorization succesfull! Changed the expiration date");
-
-          }
-        } 
-        else {
-          logger.info("Entered into else of other errors" + err);
-          throw new OAuthValidationError("Error in JWT Verification : " + err);
-        }
-      } 
-      else {
-        logger.info("Entered into else of no error");
-
-        let redis_token = await redisGet(refreshtoken);
-        if (
-          !redis_token
-        ) {
-          logger.info("Cookie Modified at refresh token");
-          throw new OAuthValidationError("Cookie Modified!");
-        }
-        logger.info("Entered into final Authorization succesful");
+const verifyToken = async (token, secret) => {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, secret, (err, decodedToken) => {
+      if (err || !decodedToken) {
+        return reject(err);
       }
+      resolve(decodedToken);
     });
-  } 
-  else {
-    logger.info("Token missing man");
-    throw new OAuthValidationError("Token missing!!");
-  };
-
-}
-
-
-function generate_refresh_token(len) {
-  var text = "";
-  var charset = "abcdefghijklmnopqrstuvwxyz012345";
-
-  for (var i = 0; i < len; i++)
-    text += charset.charAt(Math.floor(Math.random() * charset.length));
-
-  return text;
-}
-
-
-router.post("/profile", async (req, res, next) => {
-  async function authorizationjwt(){
-    try{
-        
-      await validate_jwt(req, res);
-      
-    }
-    catch(error){
-      logger.error("This is Authoriz error" + error);
-      res.send(error.message);
-    };
-  }
-  authorizationjwt().catch(err => {
-    throw new OAuthValidationError(err);
   });
-  console.log("You have successfully logged in with Authentication and Authorization. <3");
-  return res.send("You have successfully logged in with Authentication and Authorization");
-  
+};
+
+
+const TOKEN_EXPIRED_ERROR = "TokenExpiredError";
+const INVALID_TOKEN_ERROR = "JsonWebTokenError";
+
+
+async function authorizeToken(req, res, next, tokenType) {
+  try {
+    console.log('cookies')
+    console.log(req.cookies)
+    const { access_token, refresh_token } = req.cookies;
+    const token = tokenType === "access" ? access_token : refresh_token;
+    const decodedToken = await verifyToken(token, jwtSecret);
+    console.log('1')
+    console.log(decodedToken)
+    
+
+    const redisData = await redisGet(JSON.stringify(decodedToken.id));
+    console.log('2')
+    console.log(redisData)
+    
+    if (!redisData) {
+      throw new OAuthValidationError(`Invalid ${tokenType} token specified`);
+    }
+
+    const { refresh_token: rt, token: at } = JSON.parse(redisData);
+
+    if (token !== (tokenType === "access" ? at : rt)) {
+      throw new OAuthValidationError(`Mismatch of the ${tokenType} token`);
+    }
+
+    req.user = decodedToken;
+    console.log('3')
+    console.log(req.user)
+    next();
+  } catch (err) {
+    console.error(err);
+
+    if (err.name === TOKEN_EXPIRED_ERROR && tokenType === "refresh") {
+      // refresh token expired. Ask user to login
+     //res.status(401).send({ error: "Please login again" });
+    } else if (
+      err.name === INVALID_TOKEN_ERROR ||
+      err.message.includes("Invalid access token specified")
+    ) {
+      // res.status(401).send({ error: "Invalid access token specified" });
+      //res.status(401).send({ error: "Invalid access token specified" });
+      throw new Error("Invalid access token specified")
+    } else {
+      // res
+      //   .status(401)
+      //   .send({ error: `Not authorized to access this ${tokenType} resource` });
+      throw new Error("Invalid access token specified    hhhhhhh")
+    }
+  }
+}
+
+router.post('/profile',async (req, res, next) => {
+  await authorizeToken(req, res, next);
+  console.log('You have successfully logged in with Authentication and Authorization. <3');
+  res.send('You have successfully logged in with Authentication and Authorization');
 });
 
 
@@ -243,8 +218,8 @@ router.post("/profile", async (req, res, next) => {
 
 
 
-
-
-
-
 module.exports = router;
+
+
+
+

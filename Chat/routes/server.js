@@ -1,19 +1,17 @@
 var express = require('express');
 var router = express.Router();
+const {Server} = require("socket.io");
 
 /* GET home page. */
-router.get('/chat', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-module.exports = router;
 
 const httpServer = require("http").createServer(router);
-import { Server } from "socket.io";
+
 
 
 const io = new Server(httpServer, {
-  // ...
+  cors:{
+    origin:['http:/localhost:8080','http:/localhost:3004']
+  }
 });
 
 let clients = {};
@@ -28,10 +26,10 @@ io.on('connection', (socket) => {
   });
 
   // Handle message sent by user
-  socket.on('sendMessage', (data) => {
-    const userId = data.toUserId;
-    const message = data.message;
-    const senderId = data.fromUserId;
+  socket.on('sendMessage', (sender, receiver, messag) => {
+    const userId = receiver;
+    const message = messag;
+    const senderId = sender;
 
     // If recipient is connected, send message to them
     if (userId in clients) {
@@ -48,8 +46,10 @@ io.on('connection', (socket) => {
         break;
       }
     }
+    console.log("User is disconnected");
   });
 });
 
-httpServer.listen(3002);
-#wtite code for sending and receiving messages with Socket.io between two unique users
+httpServer.listen(3004);
+
+module.exports = router;
