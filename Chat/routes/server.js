@@ -10,7 +10,7 @@ const httpServer = require("http").createServer(router);
 
 const io = new Server(httpServer, {
   cors:{
-    origin:['http:/localhost:8080','http:/localhost:3004']
+    origin:['http://localhost:8080','http://localhost:3004','http://localhost:3002']
   }
 });
 
@@ -50,6 +50,37 @@ io.on('connection', (socket) => {
   });
 });
 
-httpServer.listen(3004);
+
+
+
+const io2 = require('socket.io-client').io;
+
+const socket = io2('http://localhost:3004')
+
+
+async function init() {
+  await httpServer.listen(3004, ()=> {console.log("socket server started")});
+  console.log("this is a test line");
+  socket.on("connect", ()=>{
+    console.log("client starting")
+    console.log(`you are connected with id : ${socket.id}`);
+    socket.emit('userConnect', userId);
+    // router.post('/chat/send-message', function(req, res, next) {
+    //   console.log("This is a send message with the message: ", req.body.message)
+    //   socket.emit("sendMessage", "sendUserr", "receiveUserr", req.body.message)
+    // });
+    socket.on('receiveMessage', (data) => {
+      console.log(`Received message: "${data.message}" from user ${data.senderId}.`);
+    });
+
+  })
+}
+
+init();
+// Receive message from server
+
+
+
+
 
 module.exports = router;
