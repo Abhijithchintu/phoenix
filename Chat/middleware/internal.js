@@ -1,10 +1,12 @@
+const jwt = require("jsonwebtoken");
 
+const con = require("../external/condb")();
 
 class internal {
     static generate_internal_client_token() {
-        const secret = 'abc'; // move secret, client_id to vault
+        const secret = 'chat-key'; // move secret, client_id to vault
         return jwt.sign({
-                client_id: 12,
+                client_id: 2,
                 iat: Math.floor(Date.now())
             },
             secret);
@@ -27,7 +29,7 @@ class internal {
 
     static get_client_key(body, path) {
         return new Promise((resolve, reject) => con.query(
-            "SELECT c.key FROM phoenixOauth.client_permissions cp, phoenixOauth.clients c " +
+            "SELECT c.key FROM phoenixChat.client_permissions cp, phoenixChat.clients c " +
             "WHERE c.client_id=? and c.status=1 and " +
             "cp.client_id=c.client_id and cp.status=1 and cp.api=? LIMIT 1;",
             [body.client_id, path],

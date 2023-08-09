@@ -1,38 +1,29 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
-var app = require('../app');
 var debug = require('debug')('people:server');
 var http = require('http');
 require('dotenv').config();
+const { resolveAsyncConfigs } = require('config/async');
+const config = require('config');
 
-/**
- * Get port from environment and store in Express.
- */
+const vault = require("../external/vault");
 
 var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
+let server;
+const init = async () => {
+  await vault.init().then(() => console.log("vault initialized"));
+  await resolveAsyncConfigs(config).then(() => console.log("config initialized"));
+  const app = require('../app');
+  app.set('port', port);
+  server = http.createServer(app);
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+}
+init()
+    .then(() => console.log("people server started successfully"))
+    .catch((reason) => {console.log("people server failed to start with error:", reason)});
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
