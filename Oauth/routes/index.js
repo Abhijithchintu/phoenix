@@ -33,15 +33,15 @@ router.get('/health-check', async (req, res) => {
 })
 
 router.post('/register', api_wrapper(async (req, res) => {
-  return res.send(register.register(req));
+  return res.send(await register.register(req));
 }));
 
 router.post('/login', api_wrapper(async (req, res) => {
-  return login.login(req, res);
+  return res.send(await login.login(req, res));
 }));
 
-router.post("/profile", api_wrapper((req, res) => {
-  return res.send(login.profile(req, res));
+router.post("/profile", api_wrapper(async (req, res) => {
+  return res.send(await login.profile(req, res));
 }));
 
 router.post("/healthcheck/internal", validate_internal_client, async (req, res, next) => {
