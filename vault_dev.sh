@@ -26,9 +26,9 @@ vault write auth/approle/role/node-app-role \
 vault kv put secret/oauth/mysql username="root" password=""
 vault kv put secret/oauth/jwt jwt_secret="jwtfanhere"
 
-vault kv put secret/chat/mysql username="root" password=""
+vault kv put secret/chat/mysql username="admin" password="password"
 
-vault kv put secret/people/mysql username="root" password=""
+vault kv put secret/people/mysql username="admin" password="password"
 
 roleId=$(vault read auth/approle/role/node-app-role/role-id | perl -nle'print $1 while m{role_id[ ]*(.*)}g')
 roleId=$(vault read auth/approle/role/node-app-role/role-id | perl -nle'print $1 while m{role_id[ ]*(.*)}g')
