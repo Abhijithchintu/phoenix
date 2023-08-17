@@ -58,17 +58,18 @@ const Users = require("../dao/users");
 
   }
   
-  function validate_user_name(userName){
-    if(userName === undefined || userName === null)
+  function validate_user_name(user_name){
+    console.log(user_name);
+    if(user_name === undefined || user_name === null)
       throw new OAuthValidationError("OAREV_1000");
 
-    userName = userName.toLowerCase();
-    if(userName.length > constants.MAX_USERNAME_LEN)
+    user_name = user_name.toLowerCase();
+    if(user_name.length > constants.MAX_USERNAME_LEN)
       throw new OAuthValidationError("OAREV_1003");
-    if(userName.length < constants.MIN_USERNAME_LEN)
+    if(user_name.length < constants.MIN_USERNAME_LEN)
       throw new OAuthValidationError("OAREV_1004");
     
-    if(!userName.match(constants.USERNAME_REGEX))
+    if(!user_name.match(constants.USERNAME_REGEX))
       throw new OAuthValidationError("OAREV_1005");
   }
 
