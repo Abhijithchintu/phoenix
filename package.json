@@ -14,7 +14,7 @@
     "phoenixferemove": "cd phoenixfe && rm -rf node_modules && rm -rf package-lock.json",
     "install": "concurrently \"npm run Oauthinstall\" \"npm run Peopleinstall\" \"npm run Chatinstall\" \"npm run phoenixfeinstall\"",
     "removen": "concurrently \"npm run Oauthremove\" \"npm run Peopleremove\" \"npm run Chatremove\" \"npm run phoenixferemove\"",
-    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\" \"npm run phoenixfe\""
+    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\""
   },
   "devDependencies": {
     "concurrently": "^7.6.0"
