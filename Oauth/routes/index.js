@@ -37,7 +37,7 @@ router.post('/register', api_wrapper(async (req, res) => {
 }));
 
 router.post('/login', api_wrapper(async (req, res) => {
-  return res.send(await login.login(req, res));
+    return await login.login(req, res);
 }));
 
 router.post("/profile", api_wrapper(async (req, res) => {
