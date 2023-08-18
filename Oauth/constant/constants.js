@@ -22,5 +22,6 @@ module.exports = Object.freeze({
     jwt_expiration: 60 * 10,
     jwt_refresh_expiration: 60 * 60 * 24 * 30,
 
+    DATE_REGEX_YYYY_MM_DD: /^\d{4}-\d{2}-\d{2}$/
 
 });
