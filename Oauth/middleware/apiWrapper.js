@@ -11,7 +11,12 @@ module.exports = function api_wrapper(fn) {
                 res.status(400);
                 return res.send(error.to_json());
             } else {
-                next(error);
+                res.setHeader('content-type', 'text/json');
+                res.status(500);
+                return res.send({
+                    "error_code": "500",
+                    "error_message": "Internal Server Error!"
+                });
             }
         }
     }

@@ -1,6 +1,6 @@
 module.exports = Object.freeze({
     MAX_USERNAME_LEN: 20,
-    MIN_USERNAME_LEN: 8,
+    MIN_USERNAME_LEN: 6,
     USERNAME_REGEX: /^[a-z][a-z0-9]{7,19}$/,
     MIN_MOBILE_LEN: 10,
     MAX_MOBILE_LEN: 10,
@@ -22,5 +22,6 @@ module.exports = Object.freeze({
     jwt_expiration: 60 * 10,
     jwt_refresh_expiration: 60 * 60 * 24 * 30,
 
+    DATE_REGEX_YYYY_MM_DD: /^\d{4}-\d{2}-\d{2}$/
 
 });
