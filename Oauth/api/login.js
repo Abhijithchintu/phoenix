@@ -61,9 +61,9 @@ class login {
   static async validateLogin(req){
     const user = await Users.get_by_mobile_or_user_name(req.body.mobile, req.body.user_name);
     if (!user)
-      throw new OAuthValidationError("OALOV_1017");
+      throw new OAuthValidationError("OA_1017");
     if (req.body.password !== user["password"])
-      throw new OAuthValidationError("OALOV_1001");
+      throw new OAuthValidationError("OA_1001");
     return user["client_id"];
   }
 

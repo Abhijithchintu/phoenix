@@ -14,13 +14,14 @@
     "phoenixferemove": "cd phoenixfe && rm -rf node_modules && rm -rf package-lock.json",
     "install": "concurrently \"npm run Oauthinstall\" \"npm run Peopleinstall\" \"npm run Chatinstall\" \"npm run phoenixfeinstall\"",
     "removen": "concurrently \"npm run Oauthremove\" \"npm run Peopleremove\" \"npm run Chatremove\" \"npm run phoenixferemove\"",
-    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\""
+    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\"",
+    "e2eApiTests": "wait-on tcp:3001 && wait-on tcp:3002 && wait-on tcp:3002 && cd tests/apis && npm test",
+    "tests": "npm run e2eApiTests",
+    "testsWithServer": "concurrently \"npm run start\" \"npm run e2eApiTests\""
   },
   "devDependencies": {
-    "concurrently": "^7.6.0"
-  },
-  "dependencies": {
+    "concurrently": "^7.6.0",
+    "wait-on": "^7.0.1",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2"
-  }
 }
