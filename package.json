@@ -24,4 +24,5 @@
     "wait-on": "^7.0.1",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2"
+  }
 }
