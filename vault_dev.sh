@@ -23,7 +23,7 @@ vault write auth/approle/role/node-app-role \
     token_max_ttl=4h \
     token_policies=app-policy
 
-vault kv put secret/oauth/mysql username="root" password=""
+vault kv put secret/oauth/mysql username="root" password="Rakesh@123"
 vault kv put secret/oauth/jwt jwt_secret="jwtfanhere"
 
 vault kv put secret/chat/mysql username="root" password=""
