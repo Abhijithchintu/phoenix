@@ -1,4 +1,5 @@
 var express = require('express');
+const fetch = require("node-fetch");
 const lastChatsquery = require('../api/lastChats');
 const lastMessage = require('../api/lastMessages')
 const api_wrapper = require('../middleware/apiWrapper')
@@ -38,5 +39,21 @@ router.get('/dbcheck', async (req, res) => {
 router.get('/getLastChats', api_wrapper(lastChatsquery.chatquery)) //some authorize functions should be there
 
 router.get('/getChat', api_wrapper(lastMessage.getMessages))
+
+router.get('/friends', async (req, res) => {
+  const internal = require("../middleware/internal");
+  const token = internal.generate_internal_client_token();
+  const response = await fetch("http://localhost:3003/getRelationBetween", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      'jwt-token': token,
+    }
+  });
+  const jsonData = await response.json();
+  console.log(jsonData);
+  res.send(jsonData);
+
+})
 
 module.exports = router;

@@ -13,7 +13,7 @@ const app = express();
 
 const limiter = RateLimit({
   windowMs: 60 * 1000,
-  max: 50
+  max: 60 * 1000 * 100
 });
 
 app.set('views', path.join(__dirname, 'views'));
@@ -24,6 +24,18 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(function (error, req, res, next) {
+  if (error instanceof SyntaxError && error.type === 'entity.parse.failed') {
+    res.setHeader('content-type', 'text/json');
+    res.status(400);
+    return res.send({
+      "error_code": "400",
+      "error_message": "Bad Request"
+    });
+  } else {
+    next();
+  }
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);

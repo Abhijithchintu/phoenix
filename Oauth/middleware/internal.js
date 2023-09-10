@@ -3,12 +3,11 @@
 class internal {
     static generate_internal_client_token() {
         const secret = 'abc'; // move secret, client_id to vault
-        var token = jwt.sign({
-            client_id: 12,
-            iat: Math.floor(Date.now())
-        },
+        return jwt.sign({
+                client_id: 12,
+                iat: Math.floor(Date.now())
+            },
             secret);
-        return token;
 
     }
 
@@ -19,7 +18,7 @@ class internal {
 
 
     static get_api(req) {
-        var path = url.parse(req.url).pathname;
+        let path = url.parse(req.url).pathname;
         if (!path.length < 1 && path[path.length - 1] == '/')
             path = path.substring(0, path.length - 1);
         return path;
@@ -44,13 +43,13 @@ class internal {
 
     static async validate_internal_client(req, res, next) {
         try {
-            var token = req.headers["jwt-token"] || req.headers["x-access-token"] || req.body.token;
+            const token = req.headers["jwt-token"] || req.headers["x-access-token"] || req.body.token;
             if (!token)
                 return next();
 
-            var path = get_api(req);
-            var body = parseJwt(token);
-            var client_key = get_client_key(body, path);
+            const path = get_api(req);
+            const body = parseJwt(token);
+            const client_key = get_client_key(body, path);
             if (!await client_key)
                 return next();
 

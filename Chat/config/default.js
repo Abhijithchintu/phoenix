@@ -1,3 +1,13 @@
+process.env['ALLOW_CONFIG_MUTATIONS'] = true;
+
+const vault = require("../external/vault");
+const asyncConfig = require('config/async').asyncConfig;
+require('dotenv').config();
+
+async function get_secret(path, name) {
+    return (await vault.read(path))[name];
+}
+
 const mongoose = require('mongoose')
 
 const dbconnect = (url) => {
@@ -7,4 +17,14 @@ const dbconnect = (url) => {
         .catch((err) => console.log(err))
 }
 
-module.exports = { dbconnect }
+
+const config = {
+    database: {
+        host: process.env.MYSQL_IP,
+        port: process.env.MYSQL_PORT,
+        username: asyncConfig(get_secret("secret/data/chat/mysql", "username")),
+        password: asyncConfig(get_secret("secret/data/chat/mysql", "password"))
+    },
+};
+
+module.exports = config;

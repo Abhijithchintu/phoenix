@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 
-
 const debug = require('debug')('chat:server');
 const http = require('http');
 require('dotenv').config();
+const { resolveAsyncConfigs } = require('config/async');
+const config = require('config');
 
+const vault = require("../external/vault");
 const {dbconnect} = require('../config/default')
+const port = normalizePort(process.env.PORT || '3000');
 
-
-var port = normalizePort(process.env.PORT || '3000');
-
-let server
-
+let server;
 const init = async () => {
-  try{
-    await dbconnect(process.env.MONGO_URI)
+  try {
+    await vault.init().then(() => console.log("vault initialized"));
+    await resolveAsyncConfigs(config).then(() => console.log("config initialized"));
+
     const app = require('../app');
     app.set('port', port);
     server = http.createServer(app);
@@ -22,19 +23,14 @@ const init = async () => {
     server.on('error', onError);
     server.on('listening', onListening);
   }
-  catch(err){
+  catch(err) {
     console.log("Server failed to start with error:", err)
   }
 }
 
-init()
-/**
- * Normalize a port into a number, string, or false.
- */
-
+init().then(() => console.log("chat server started successfully"));
 function normalizePort(val) {
-  var port = parseInt(val, 10);
-
+  const port = parseInt(val, 10);
   if (isNaN(port)) {
     // named pipe
     return val;
@@ -48,16 +44,13 @@ function normalizePort(val) {
   return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
 
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
 
-  var bind = typeof port === 'string'
+  const bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -76,14 +69,11 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
+  const addr = server.address();
+  const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+

@@ -3,7 +3,7 @@
     "Oauth": "cd Oauth && npm start",
     "People": "cd People && npm start",
     "Chat": "cd Chat && npm start",
-    "phoenixfe": "cd phoenixfe && npm run build",
+    "phoenixfe": "cd phoenixfe && npm start",
     "Oauthinstall": "cd Oauth && npm install",
     "Peopleinstall": "cd People && npm install",
     "Chatinstall": "cd Chat && npm install",
@@ -14,9 +14,15 @@
     "phoenixferemove": "cd phoenixfe && rm -rf node_modules && rm -rf package-lock.json",
     "install": "concurrently \"npm run Oauthinstall\" \"npm run Peopleinstall\" \"npm run Chatinstall\" \"npm run phoenixfeinstall\"",
     "removen": "concurrently \"npm run Oauthremove\" \"npm run Peopleremove\" \"npm run Chatremove\" \"npm run phoenixferemove\"",
-    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\" \"npm run phoenixfe\""
+    "start": "concurrently \"npm run Oauth\" \"npm run People\" \"npm run Chat\"",
+    "e2eApiTests": "wait-on tcp:3001 && wait-on tcp:3002 && wait-on tcp:3002 && cd tests/apis && npm test",
+    "tests": "npm run e2eApiTests",
+    "testsWithServer": "concurrently \"npm run start\" \"npm run e2eApiTests\""
   },
   "devDependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "wait-on": "^7.0.1",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2"
   }
 }

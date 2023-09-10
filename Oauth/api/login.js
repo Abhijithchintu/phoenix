@@ -26,7 +26,7 @@ class login {
     let user_id = await login.validateLogin(req);
     logger.info("login details validated");
 
-    let refresh_token = login.generate_refresh_token(64);
+    let refresh_token = await login.generate_refresh_token(64);
     let refresh_token_maxage = new Date() + jwt_refresh_expiration;
 
     let token = jwt.sign({ uid: user_id }, jwt_secret, {
@@ -55,16 +55,15 @@ class login {
     );
 
     var siftvalue = await redis_client.get(uid);
-    console.log(siftvalue, " here it is");
     return res.send(" You have successfully logged in");
   }
 
   static async validateLogin(req){
     const user = await Users.get_by_mobile_or_user_name(req.body.mobile, req.body.user_name);
     if (!user)
-      throw new OAuthValidationError("OALOV_1017");
+      throw new OAuthValidationError("OA_1017");
     if (req.body.password !== user["password"])
-      throw new OAuthValidationError("OALOV_1001");
+      throw new OAuthValidationError("OA_1001");
     return user["client_id"];
   }
 
@@ -91,7 +90,7 @@ class login {
   
             if (err.name === "TokenExpiredError") {
   
-              let redis_token = rediscl.get(uid, function (err, val) {
+              let redis_token = redis_client.get(uid, function (err, val) {
                 return err ? null : val ? val : null;
               });
   
@@ -114,14 +113,15 @@ class login {
   
                   let refresh_token_maxage = new Date() + jwt_refresh_expiration;
   
-                  rediscl.set(
+                  redis_client.set(
                     decoded.uid,
                     JSON.stringify({
                       refresh_token: refresh_token,
                       expires: refresh_token_maxage
                     }),
-                    rediscl.print
+                    
                   );
+                  logger.info("client id is stored in redis database");
                 }
   
                 let token = jwt.sign({ uid: decoded.uid }, jwt_secret, {

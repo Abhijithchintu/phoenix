@@ -24,8 +24,8 @@ const init = async () => {
   server.on('listening', onListening);
 }
 init()
-    .then(() => console.log("server started successfully"))
-    .catch((reason) => {console.log("Server failed to start with error:", reason)});
+    .then(() => console.log("oauth server started successfully"))
+    .catch((reason) => {console.log("oauth server failed to start with error:", reason)});
 
 
 function normalizePort(val) {
