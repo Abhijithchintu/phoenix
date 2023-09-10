@@ -12,7 +12,7 @@ do
     ((i+=1))
 done
 
-export VAULT_ADDR=http://localhost:8200
+export VAULT_ADDR=http://127.0.0.1:8200
 export VAULT_TOKEN=$token
 
 vault auth enable approle
