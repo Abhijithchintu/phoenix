@@ -68,6 +68,13 @@ then
     then
         echo "mysql not found! installing.."
         sudo pacman -S mysql
+        mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+        echo "two users created. need to create a new user. One is root@localhost, it has no password, but you need to \
+be system 'root' user to connect. Use, for example, sudo mysql \
+The second is mysql@localhost, it has no password either, but \
+you need to be the system 'mysql' user to connect. \
+After connecting you can set the password, if you would need to be \
+able to connect as any of these users with a password and without sudo."
     fi
 else
     if ! command -v vault &> /dev/null

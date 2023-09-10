@@ -40,6 +40,11 @@ router.post('/login', api_wrapper(async (req, res) => {
     return await login.login(req, res);
 }));
 
+router.post('/token/verify', api_wrapper(async (req, res) => {
+  return await login.verify_token(req, res);
+}));
+
+
 router.post("/profile", api_wrapper(async (req, res) => {
   return res.send(await login.profile(req, res));
 }));

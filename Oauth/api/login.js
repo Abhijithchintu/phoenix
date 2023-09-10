@@ -1,12 +1,14 @@
 const jwt = require("jsonwebtoken");
 const config = require('config');
 const redis = require("redis");
+const crypto = require('crypto');
 
 const logger = require("../logger");
 const OAuthValidationError = require("../error/OAuthValidationError");
 const constants = require("../constant/constants");
 const Users = require("../dao/users");
 const statusCode = require("../constant/statusCode");
+const jwtUtil = require("../util/jwtUtil");
 const redis_client = redis.createClient();
 
 const jwt_secret = config.get("jwt_secret");
@@ -15,47 +17,37 @@ const jwt_refresh_expiration = constants.jwt_refresh_expiration;
 
 redis_client.connect().then(async () => {
   redis_client.on('error', err => {
-    console.log('Error ' + err);
-    logger.info("Error is her");
+    logger.info('Error: ' + err);
   });
 });
 
 class login {
 
   static async login(req, res) {
-    let user_id = await login.validateLogin(req);
-    logger.info("login details validated");
-
+    let user_id = (await login.validateLogin(req)).toString();
+    let token = jwt.sign({ uid: user_id }, jwt_secret, {expiresIn: jwt_expiration});
     let refresh_token = await login.generate_refresh_token(64);
-    let refresh_token_maxage = new Date() + jwt_refresh_expiration;
-
-    let token = jwt.sign({ uid: user_id }, jwt_secret, {
-      expiresIn: jwt_expiration
-    });
-
-    res.cookie("access_token", token, {
-      httpOnly: true
-    });
-    res.cookie("refresh_token", refresh_token, {
-      httpOnly: true
-    });
-
-    let uid = JSON.stringify(user_id);
-    console.log("here is the string for redis", JSON.stringify({
-      refresh_token: refresh_token,
-      expires: refresh_token_maxage
-    }));
-    await redis_client.set(uid, JSON.stringify({
-          refresh_token: refresh_token,
-          expires: refresh_token_maxage
-        }), function (err, result) {
-          if (err) throw (err);
-          console.log(result);
-        }
+    let refresh_token_maxage = Math.floor(new Date().getTime() / 1000) + jwt_refresh_expiration;
+    await redis_client.set(refresh_token,
+      JSON.stringify({
+          "user_id": user_id,
+          "refresh_token": refresh_token,
+          "expires": refresh_token_maxage
+      }),
+      {"EX": jwt_refresh_expiration}
     );
 
-    var siftvalue = await redis_client.get(uid);
-    return res.send(" You have successfully logged in");
+    return res.send({
+      "access_token": token,
+      "token_type": "phoenix-oauth-1.0",
+      "expires_in": jwt_expiration,
+      "refresh_token": refresh_token
+    });
+  }
+
+  static async verify_token(req, res) {
+    let user_id = (await jwtUtil.validate_and_get_body(req)).toString();
+    return res.send({"valid": true});
   }
 
   static async validateLogin(req){
@@ -159,13 +151,7 @@ class login {
   }
 
   static async generate_refresh_token(len) {
-    var text = "";
-    var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
-  
-    for (var i = 0; i < len; i++)
-      text += charset.charAt(Math.floor(Math.random() * charset.length));
-  
-    return text;
+    return crypto.randomBytes(len).toString('hex');
   }
 }
 

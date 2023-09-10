@@ -31,5 +31,6 @@ module.exports = Object.freeze({
     OA_1018: "Invalid gender",
     OA_1019: "Invalid dob",
     OA_1020: "Invalid username",
-    OA_1021: "Name is not invalid"
+    OA_1021: "Name is not invalid",
+    OA_1022: "Invalid token"
 });
