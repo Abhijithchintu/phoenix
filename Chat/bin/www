@@ -8,6 +8,7 @@ const config = require('config');
 
 const vault = require("../external/vault");
 const {dbconnect} = require('../config/default')
+const sockEventHandler = require('../routes/sockEventHandler');
 const port = normalizePort(process.env.PORT || '3000');
 
 let server;
@@ -19,6 +20,17 @@ const init = async () => {
     const app = require('../app');
     app.set('port', port);
     server = http.createServer(app);
+
+// const io = new Server(3002, {
+//   cors:{
+//     origin:['http:/localhost:8080','http:/localhost:3002', 'http:/localhost:3004']
+//   }
+// });
+    const { Server } = require('socket.io');
+    const io = new Server(server);
+    // todo: implement authentication on socket 
+    sockEventHandler(io);
+
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);

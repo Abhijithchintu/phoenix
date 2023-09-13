@@ -9,10 +9,6 @@ const {messages, rooms} = require('./../db/mongodb/schema')
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
 router.get('/health-check', async (req, res) => {
   const message = {
