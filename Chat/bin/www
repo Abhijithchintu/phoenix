@@ -28,7 +28,7 @@ const init = async () => {
   }
 }
 
-init().then(() => console.log("chat server started successfully"));
+init().then(() => console.log(`chat server started successfully on http://localhost${port}`));
 function normalizePort(val) {
   const port = parseInt(val, 10);
   if (isNaN(port)) {

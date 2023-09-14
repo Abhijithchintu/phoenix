@@ -1,0 +1,25 @@
+{
+  "name": "@pheonix/eslint-custom-config",
+  "version": "1.0.0",
+  "description": "phoenix-fe js and react eslint configuration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "danampally rahul",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx": "^0.1.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-config-next":"^ 13.4.19"
+  },
+  "devDependencies": {
+    "eslint": "^8.49.0",
+    "prettier": "^3.0.3"
+  }
+}

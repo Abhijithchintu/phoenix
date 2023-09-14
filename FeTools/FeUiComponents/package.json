@@ -1,0 +1,18 @@
+{
+  "name": "@pheonixfe/components",
+  "version": "1.0.0",
+  "description": "ui components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "danampally rahul",
+  "license": "ISC",
+  "dependencies": {
+    "@nextui-org/react": "^2.1.12",
+    "framer-motion": "^10.16.4"
+  },
+  "devDependencies": {
+    "@pheonix/eslint-custom-config": "*"
+  }
+}
