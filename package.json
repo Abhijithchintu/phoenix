@@ -2,7 +2,8 @@
   "workspaces": [
     "Oauth",
     "phoenixFe",
-    "FeTools/*"
+    "FeTools/*",
+    "FePackages/*"
   ],
   "scripts": {
     "Oauth": "cd Oauth && npm start",
@@ -31,6 +32,7 @@
     "turbo": "^1.10.13",
     "wait-on": "^7.0.1",
     "eslint": "^8.49.0",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "@pheonix/eslint-custom-config":"*"
   }
 }

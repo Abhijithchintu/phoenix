@@ -6,13 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "danampally rahul",
+  "author": "danampally rahul <danampallyrahul1729@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "axios-hooks": "^4.0.0",
-    "axios":"^1.5.0"
-  },
-  "devDependencies": {
-    "@pheonix/eslint-custom-config": "*"
+    "axios":"^1.5.0",
+    "@phoenixfe/utils":"*"
   }
 }

@@ -1,8 +1,3 @@
-async function Login(){
-    return (
-        <div>
-            login
-        </div>
-    )
-}
-export default Login;
+import { LoginPage } from '@phoenixfe/auth-components';
+
+export default LoginPage;

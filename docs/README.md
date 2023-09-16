@@ -9,6 +9,11 @@
 - bash/zsh for vault dev setup
 - docsify (documentation only)
 - swagger (documentation only)
+- Nextjs@13
+- axios
+- axios-hooks
+- next-ui
+- tailwind-css
 
 # Build/Deploy/Run
 ## Configuration
@@ -24,6 +29,8 @@ npm start
 Run these commands from root (instead of going to each service and running commands individually, all the commands can be run from root itself)  
 a. npm install: to install node_modules in oauth, people, chat and phoenixfe.   
 b. npm run removen: to remove already installed node modules and packagae-lock.json file in above mentioned services.  
-c. npm run start: It starts the node in oauth, people and chat services. And also run build in phoenixfe.   
+c. npm run start: It starts the node in oauth, people and chat services. And also run build in phoenixfe. 
+d. npm run dev .It starts all services and frontend development server  
 # APIs
 [APIs](https://manu156.github.io/phoenix/apis)
+

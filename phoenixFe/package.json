@@ -1,22 +1,26 @@
 {
-  "name": "@phoenix/frontned",
+  "name": "@phoenix/frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4063",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --fix"
   },
   "dependencies": {
+    "autoprefixer": "^10.4.15",
     "dotenv": "^16.0.3",
     "next": "13.4.19",
+    "postcss": "^8.4.29",
+    "prettier": "^3.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "eslint": "^8.49.0",
-    "prettier": "^3.0.3"
-  },
-  "devDependencies": {
-    "@pheonix/eslint-custom-config": "*"
+    "tailwindcss": "^3.3.3",
+    "@pheonixfe/components":"*",
+    "@phoenixfe/hooks":"*",
+    "@phoenixfe/utils":"*",
+    "@phoenixfe/auth-components":"*",
+    "@phoenixfe/welcomepage":"*"
   }
 }

@@ -1,12 +1,9 @@
-'use client'
- 
-import {NextUIProvider} from "@nextui-org/react";
- 
+'use client';
+
+import { NextUIProvider } from '@nextui-org/react';
+
 function ThemeProvider({ children }) {
-  return <NextUIProvider>
-     <main className="dark text-foreground bg-background">
-     {children}
-     </main></NextUIProvider>
+	return <NextUIProvider>{children}</NextUIProvider>;
 }
 
 export default ThemeProvider;

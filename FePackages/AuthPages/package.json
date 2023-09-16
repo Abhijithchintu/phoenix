@@ -1,0 +1,11 @@
+{
+  "name": "@phoenixfe/auth-components",
+  "version": "1.0.0",
+  "description": "auth components of phoenixfe",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "danampally rahul <danampallyrahul1729@gmail.com>",
+  "license": "ISC"
+}
