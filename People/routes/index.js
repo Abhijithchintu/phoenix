@@ -31,4 +31,12 @@ router.get('/getRelationBetween', auth_interceptor,
       res.send({"status": "success!"});
     })
 
+router.get('/getAllRelations', async (req, res) => {
+  // we will be having 2 dbs, frnz and blocked. we should have data synced between 2 dbs
+  let user_id = req.query.user_id
+  let relations = {}
+  relations.friends = dao.get_all_friends(user_id)
+  relations.blocked = dao.get_all_blocked(user_id)
+  res.send(relations)
+})
 module.exports = router;
