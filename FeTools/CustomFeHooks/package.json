@@ -9,8 +9,9 @@
   "author": "danampally rahul <danampallyrahul1729@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@phoenixfe/utils": "*",
+    "axios": "^1.5.0",
     "axios-hooks": "^4.0.0",
-    "axios":"^1.5.0",
-    "@phoenixfe/utils":"*"
+    "react-hook-form": "^7.46.1"
   }
 }

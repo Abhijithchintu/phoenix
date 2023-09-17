@@ -3,7 +3,9 @@
 import { NextUIProvider } from '@nextui-org/react';
 
 function ThemeProvider({ children }) {
-	return <NextUIProvider>{children}</NextUIProvider>;
+	return (
+		<NextUIProvider className="h-screen w-screen">{children}</NextUIProvider>
+	);
 }
 
 export default ThemeProvider;

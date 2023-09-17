@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const DEFINED_PATHS = ['/login', '/home'];
+const DEFINED_PATHS = ['/login', '/home', '/signup'];
 
 export async function middleware(request) {
 	const { pathname } = request.nextUrl;

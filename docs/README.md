@@ -14,6 +14,7 @@
 - axios-hooks
 - next-ui
 - tailwind-css
+- React Datepicker  <!-- https://github.com/OMikkel/tailwind-datepicker-react -->
 
 # Build/Deploy/Run
 ## Configuration
