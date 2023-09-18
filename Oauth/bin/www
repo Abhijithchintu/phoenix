@@ -24,7 +24,7 @@ const init = async () => {
   server.on('listening', onListening);
 }
 init()
-    .then(() => console.log("oauth server started successfully"))
+    .then(() => console.log(`oauth server started successfully on http://localhost:${port}`))
     .catch((reason) => {console.log("oauth server failed to start with error:", reason)});
 
 

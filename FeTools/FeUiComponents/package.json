@@ -1,0 +1,18 @@
+{
+  "name": "@pheonixfe/components",
+  "version": "1.0.0",
+  "description": "ui components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "danampally rahul <danampallyrahul1729@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@nextui-org/react": "^2.1.12",
+    "framer-motion": "^10.16.4",
+    "tailwind-datepicker-react": "^1.4.2",
+    "react": "^18.2.0"
+  },
+  "sideEffects": false
+}

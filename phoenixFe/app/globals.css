@@ -1,0 +1,18 @@
+@tailwind base;
+/* remove inner and outer spin on input */
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+  
+@tailwind components;
+@tailwind utilities;
+
+
+
+/*
+ref: https://andy-bell.co.uk/a-modern-css-reset
+*/

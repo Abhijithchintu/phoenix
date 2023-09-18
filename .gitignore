@@ -171,3 +171,8 @@ packages/react-devtools-timeline/dist
 
 /Oauth/default/default.js
 /vault_dev.sh
+
+
+##turbo cache
+**/.turbo/
+**/.next/

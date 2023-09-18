@@ -1,0 +1,17 @@
+{
+  "name": "@phoenixfe/hooks",
+  "version": "1.0.0",
+  "description": "custom hooks for frontend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "danampally rahul <danampallyrahul1729@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@phoenixfe/utils": "*",
+    "axios": "^1.5.0",
+    "axios-hooks": "^4.0.0",
+    "react-hook-form": "^7.46.1"
+  }
+}
