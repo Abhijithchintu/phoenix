@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@pheonixfe/components":"*"
+    "@pheonixfe/components":"*",
+    "@phoenixfe/hooks":"*"
   },
   "author": "danampally rahul <danampallyrahul1729@gmail.com>",
   "license": "ISC"

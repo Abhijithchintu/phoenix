@@ -1,7 +1,6 @@
 'use client';
 
-export * from '@nextui-org/react';
-export { default as DatePicker } from './DatePicker';
+export { Input, Button } from '@nextui-org/react';
 
 export { default as ThemeProvider } from './ThemeProvider';
 export { default as Select } from './Select';

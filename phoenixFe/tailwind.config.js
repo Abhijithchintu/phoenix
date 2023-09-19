@@ -16,11 +16,40 @@ const PRIMARY_COLOR_VARIANTS = {
 	foreground: '#ffffff',
 };
 
+// const DEFAULT_COLOR_VARIANTS = {
+// 	50: '##e8fffe',
+// 	100: '#E6FDFC',
+// 	200: '#CEFBFC',
+// 	300: '#B4F1F7',
+// 	400: '#9EE2F0',
+// 	500: '#7ECEE7',
+// 	600: '#5CA5C6',
+// 	700: '#3F7FA6',
+// 	800: '#285B85',
+// 	900: '#18416E',
+// 	DEFAULT: '#F6A04D',
+// 	foreground: '#ffffff',
+// };
+
+// const DANGER_COLOR_VARIANTS = {
+// 	50: '#FBE2D1',
+// 	100: '#F8BFA4',
+// 	200: '#EB9074',
+// 	300: '#D8644F',
+// 	400: '#BF291E',
+// 	500: '#A41517',
+// 	600: '#890F1B',
+// 	700: '#6E091B',
+// 	800: '#5B051C',
+// 	900: '#5B051C',
+// 	DEFAULT: '#BF291E',
+// 	foreground: '#ffffff',
+// };
+
 module.exports = {
 	content: [
 		'./app/**/*.{js,ts,jsx,tsx,mdx}',
 		'../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
-		'../node_modules/tailwind-datepicker-react/dist/**/*.js',
 		'../FePackages/**/*.{js,ts,jsx,tsx,mdx}',
 	],
 	theme: {
@@ -38,9 +67,10 @@ module.exports = {
 				light: {
 					colors: {
 						background: '#f4f4f4',
-						foreground: '#000000',
-						focus: '#F6A04D',
+						foreground: '#4F4F4F',
 						primary: PRIMARY_COLOR_VARIANTS,
+						// default: DEFAULT_COLOR_VARIANTS,
+						// danger: DANGER_COLOR_VARIANTS,
 					},
 				},
 				dark: {
