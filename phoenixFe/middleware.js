@@ -6,6 +6,7 @@ const LOGIN_PATHS = ['/login', '/signup'];
 
 async function authenticator({ request }) {
 	const VERIFY_TOKEN_PATH = `${process.env.NEXT_PUBLIC_OAUTH_BASE_URL}/token/verify`;
+
 	try {
 		const accessToken = request.cookies.get(
 			process.env.NEXT_PUBLIC_OAUTH_TOKEN_NAME,
