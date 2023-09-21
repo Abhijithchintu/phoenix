@@ -7,6 +7,7 @@ const useChatAxios = makeUseAxios({
 	cache: false,
 	defaultOptions: {
 		ssr: false,
+		manual: true,
 	},
 });
 
